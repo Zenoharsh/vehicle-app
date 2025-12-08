@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+
+# Build Outputs (When you pack the .exe)
+out/
+dist/
+make/
+
+# Local Data (Don't commit the live database!)
+*.db
+*.sqlite
+*.log
+
+# System files
+.DS_Store
+Thumbs.db
+
+# User specifics
+bg.jpg
+bg.png
+tailwind.js
