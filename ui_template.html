@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <title>15th Bn Command</title>
+    <script src="tailwind.js"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              army: {
+                900: "#1B2418",
+                700: "#2E3B29",
+                500: "#4A5D43",
+                100: "#E8F0E6",
+              },
+              gold: { 500: "#FFD700" },
+            },
+            fontFamily: {
+              sans: ["system-ui", "sans-serif"],
+              stencil: ["Impact", "sans-serif"], // Reverted to Impact for that Military Stencil look
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        background-color: #f3f4f6;
+        color: #1f2937;
+      }
+
+      /* --- HERO SECTION (RED + GIF) --- */
+      .hero-section {
+        background: linear-gradient(
+          135deg,
+          #5b0f14 0%,
+          #7f1d1d 40%,
+          #b91c1c 100%
+        );
+        color: white;
+        padding: 3.5rem 2.5rem;
+        border-bottom: 5px solid #ffd700;
+        margin-bottom: 2.5rem;
+        border-radius: 0 0 8px 8px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hero-gif {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        height: 100%;
+        width: auto;
+        object-fit: cover;
+        opacity: 0.9; /* High opacity per your request */
+        z-index: 0;
+        mask-image: linear-gradient(to left, black 60%, transparent 100%);
+        -webkit-mask-image: linear-gradient(
+          to left,
+          black 60%,
+          transparent 100%
+        );
+      }
+
+      /* --- TILES (Reverted to the Clean Style you liked) --- */
+      .cmd-tile {
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        transition: all 0.2s;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        cursor: pointer;
+        padding: 1.5rem;
+        height: 160px;
+        position: relative;
+        overflow: hidden;
+      }
+      .cmd-tile::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          to bottom right,
+          rgba(255, 255, 255, 0.15),
+          transparent
+        );
+        pointer-events: none;
+      }
+      .cmd-tile:hover {
+        transform: translateY(-4px) scale(1.02);
+        box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+        border-color: #4a5d43;
+      }
+
+      .cmd-tile h3 {
+        margin-top: 0.75rem;
+        font-weight: 700;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        color: #2e3b29;
+        z-index: 10;
+      }
+      .cmd-tile svg {
+        z-index: 10;
+      }
+
+      /* --- INFO DECK --- */
+      .info-deck {
+        display: flex;
+        gap: 1.5rem;
+        overflow-x: auto;
+        padding-bottom: 1rem;
+        scroll-snap-type: x mandatory;
+      }
+      .info-card {
+        min-width: 300px;
+        flex: 1;
+        background: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        border-left: 4px solid #4a5d43;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        scroll-snap-align: start;
+      }
+
+      /* --- SCROLLBAR --- */
+      .info-deck::-webkit-scrollbar {
+        height: 8px;
+      }
+      .info-deck::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+      }
+
+      .page {
+        display: none;
+      }
+      .page.active {
+        display: block;
+        animation: fadeIn 0.2s;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+    </style>
+  </head>
+  <body class="h-full flex flex-col font-sans">
+    <nav
+      class="bg-army-900 text-white px-8 py-4 flex justify-between items-center shadow-md z-20"
+    >
+      <div class="flex items-center gap-3">
+        <span class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
+        <div
+          class="text-xs font-mono text-gray-400 uppercase tracking-widest"
+          id="conn-status"
+        >
+          Initializing...
+        </div>
+      </div>
+      <div class="flex gap-8">
+        <button
+          onclick="showPage('home')"
+          class="text-sm font-bold uppercase tracking-wide hover:text-gold-500 transition-colors"
+        >
+          Command Home
+        </button>
+        <button
+          onclick="showPage('vehicles')"
+          class="text-sm font-bold uppercase tracking-wide text-gray-400 hover:text-white transition-colors"
+        >
+          Fleet Register
+        </button>
+        <button
+          class="text-sm font-bold uppercase tracking-wide text-gray-400 hover:text-white transition-colors"
+        >
+          Settings
+        </button>
+      </div>
+    </nav>
+
+    <main class="flex-1 overflow-y-auto px-6 pb-8">
+      <div class="mx-auto max-w-7xl">
+        <div id="home-page" class="page active">
+          <div class="hero-section flex items-center gap-8 shadow-lg">
+            <div
+              class="h-24 w-24 bg-white rounded-full flex items-center justify-center border-4 border-gold-500 shadow-xl z-10 shrink-0 overflow-hidden"
+            >
+              <img
+                src="logo.png"
+                onerror="this.style.display='none'; this.nextElementSibling.style.display='block'"
+                class="h-full w-full object-cover"
+              />
+              <span
+                style="display: none"
+                class="text-army-900 font-black text-3xl"
+                >15</span
+              >
+            </div>
+            <div class="z-10">
+              <h1 class="text-4xl font-stencil text-gold-500 tracking-wider">
+                15th Battalion
+              </h1>
+              <p
+                class="text-lg font-bold tracking-[0.2em] uppercase opacity-90 text-gray-200"
+              >
+                Brigade of The Guards
+              </p>
+              <div
+                class="mt-4 flex gap-6 text-xs font-mono font-bold tracking-wide"
+              >
+                <span
+                  class="px-3 py-1 bg-black/40 rounded border border-red-400 text-red-200"
+                  >OFF ROAD: <b id="stat-off">--</b></span
+                >
+                <span
+                  class="px-3 py-1 bg-black/40 rounded border border-yellow-400 text-yellow-200"
+                  >REPAIRS: <b id="stat-repair">--</b></span
+                >
+              </div>
+            </div>
+            <img
+              src="vehicle.gif"
+              class="hero-gif"
+              onerror="this.style.display='none'"
+            />
+          </div>
+
+          <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+            <div
+              onclick="showPage('vehicles')"
+              class="cmd-tile border-l-4 border-army-700"
+            >
+              <svg
+                class="w-8 h-8 text-army-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
+                />
+              </svg>
+              <h3>Vehicles</h3>
+            </div>
+            <div class="cmd-tile border-l-4 border-blue-500">
+              <svg
+                class="w-8 h-8 text-army-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                />
+              </svg>
+              <h3>Training</h3>
+            </div>
+            <div class="cmd-tile border-l-4 border-yellow-600">
+              <svg
+                class="w-8 h-8 text-army-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"
+                />
+              </svg>
+              <h3>Modifications</h3>
+            </div>
+            <div class="cmd-tile border-l-4 border-gray-400">
+              <svg
+                class="w-8 h-8 text-army-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                />
+              </svg>
+              <h3>Drivers</h3>
+            </div>
+            <div
+              onclick="openModal('vehicle-modal')"
+              class="cmd-tile border-army-500 bg-army-100 hover:bg-army-200"
+            >
+              <svg
+                class="w-8 h-8 text-army-900"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <h3 class="text-army-900">Add New Eqpt</h3>
+            </div>
+          </div>
+
+          <h3
+            class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3 ml-1"
+          >
+            Information & Alerts
+          </h3>
+          <div class="info-deck">
+            <div class="info-card">
+              <div class="flex items-center gap-3 mb-2">
+                <svg
+                  class="w-6 h-6 text-gray-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
+                <h4 class="font-bold text-gray-800">S.O.P.</h4>
+              </div>
+              <p class="text-xs text-gray-500">
+                Standard Operating Procedures for Field & Peace locations.
+              </p>
+            </div>
+            <div class="info-card border-l-blue-500">
+              <div class="flex items-center gap-3 mb-2">
+                <svg
+                  class="w-6 h-6 text-blue-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"
+                  />
+                </svg>
+                <h4 class="font-bold text-gray-800">Gen. Instructions</h4>
+              </div>
+              <p class="text-xs text-gray-500">
+                Daily Technical Orders and Safety advisories.
+              </p>
+            </div>
+            <div class="info-card border-l-red-500">
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-3">
+                  <svg
+                    class="w-6 h-6 text-red-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                    />
+                  </svg>
+                  <h4 class="font-bold text-gray-800">Repair Alerts</h4>
+                </div>
+                <span
+                  id="stat-alert-count"
+                  class="text-2xl font-black text-red-600"
+                  >0</span
+                >
+              </div>
+              <p class="text-xs text-gray-500">
+                Critical defects pending rectification.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div id="vehicles-page" class="page">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold text-gray-800">Unit Vehicles</h2>
+            <button
+              onclick="showPage('home')"
+              class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded font-bold hover:bg-gray-50"
+            >
+              Back
+            </button>
+          </div>
+          <div
+            class="bg-white shadow rounded-lg overflow-hidden border border-gray-200"
+          >
+            <table class="w-full text-left">
+              <thead
+                class="bg-army-100 text-xs uppercase font-bold text-army-900 border-b border-gray-300"
+              >
+                <tr>
+                  <th class="px-6 py-4">BA Number</th>
+                  <th class="px-6 py-4">Model</th>
+                  <th class="px-6 py-4">Coy</th>
+                  <th class="px-6 py-4">Status</th>
+                  <th class="px-6 py-4 text-right">Odometer</th>
+                </tr>
+              </thead>
+              <tbody
+                id="vehicle-table-body"
+                class="divide-y divide-gray-100 text-sm font-medium"
+              ></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <div
+      id="vehicle-modal"
+      class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 backdrop-blur-sm"
+    >
+      <div class="bg-white w-full max-w-md rounded-lg shadow-xl p-6">
+        <h3 class="text-xl font-bold text-gray-800 mb-4 uppercase">
+          New Vehicle Entry
+        </h3>
+        <form id="vehicle-form" class="space-y-4">
+          <input
+            id="v-ba"
+            placeholder="BA Number"
+            class="w-full p-2 border rounded bg-gray-50"
+            required
+          />
+          <div class="grid grid-cols-2 gap-4">
+            <input
+              id="v-make"
+              placeholder="Make"
+              class="w-full p-2 border rounded bg-gray-50"
+              required
+            />
+            <input
+              id="v-model"
+              placeholder="Model"
+              class="w-full p-2 border rounded bg-gray-50"
+              required
+            />
+          </div>
+          <input
+            id="v-coy"
+            placeholder="Company"
+            class="w-full p-2 border rounded bg-gray-50"
+          />
+          <input
+            id="v-odo"
+            type="number"
+            placeholder="Odometer"
+            class="w-full p-2 border rounded bg-gray-50"
+            required
+          />
+          <div class="flex justify-end gap-3 pt-2">
+            <button
+              type="button"
+              onclick="closeModal('vehicle-modal')"
+              class="px-4 py-2 text-gray-600 font-bold"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="px-4 py-2 bg-army-700 text-white font-bold rounded"
+            >
+              Confirm Add
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      let API_URL = "";
+
+      window.electronAPI.on("APP_CONFIG", (config) => {
+        API_URL = config.apiUrl;
+        document.getElementById("conn-status").innerText = `SERVER: ${
+          config.serverIp
+        } | MODE: ${config.mode.toUpperCase()}`;
+        loadDashboard();
+      });
+
+      async function api(endpoint, opts) {
+        try {
+          return await (await fetch(API_URL + endpoint, opts)).json();
+        } catch (e) {
+          console.error(e);
+          return null;
+        }
+      }
+
+      async function loadDashboard() {
+        try {
+          const stats = await api("/api/dashboard");
+          if (stats) {
+            document.getElementById("stat-off").innerText = stats.off_road;
+            document.getElementById("stat-repair").innerText =
+              stats.active_repairs;
+            document.getElementById("stat-alert-count").innerText =
+              stats.active_repairs;
+          }
+        } catch (e) {}
+      }
+
+      async function loadVehicles() {
+        try {
+          const vehicles = await api("/api/vehicles");
+          const tbody = document.getElementById("vehicle-table-body");
+          tbody.innerHTML = "";
+          if (!vehicles) return;
+
+          vehicles.forEach((v) => {
+            const statusColor =
+              v.status === "On Road"
+                ? "bg-green-100 text-green-800"
+                : "bg-red-100 text-red-800";
+
+            tbody.innerHTML += `
+          <tr class="hover:bg-gray-50">
+            <td class="px-6 py-4 font-mono font-bold text-army-900">${
+              v.ba_no
+            }</td>
+            <td class="px-6 py-4">${v.make} ${v.model}</td>
+            <td class="px-6 py-4">${v.coy}</td>
+            <td class="px-6 py-4">
+              <span class="px-2 py-1 rounded text-xs font-bold ${statusColor}">
+                ${v.status}
+              </span>
+            </td>
+            <td class="px-6 py-4 text-right font-mono">
+              ${v.current_odometer.toLocaleString()}
+            </td>
+          </tr>`;
+          });
+        } catch (e) {}
+      }
+
+      function showPage(id) {
+        document
+          .querySelectorAll(".page")
+          .forEach((p) => p.classList.remove("active"));
+        document.getElementById(id + "-page").classList.add("active");
+        if (id === "home") loadDashboard();
+        if (id === "vehicles") loadVehicles();
+      }
+
+      function openModal(id) {
+        const el = document.getElementById(id);
+        el.classList.remove("hidden");
+        el.classList.add("flex");
+      }
+
+      function closeModal(id) {
+        const el = document.getElementById(id);
+        el.classList.add("hidden");
+        el.classList.remove("flex");
+      }
+
+      document.getElementById("vehicle-form").onsubmit = async (e) => {
+        e.preventDefault();
+        const data = {
+          ba_no: document.getElementById("v-ba").value,
+          make: document.getElementById("v-make").value,
+          model: document.getElementById("v-model").value,
+          coy: document.getElementById("v-coy").value,
+          current_odometer: document.getElementById("v-odo").value,
+          status: "On Road",
+        };
+        await api("/api/vehicles", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+        closeModal("vehicle-modal");
+        showPage("vehicles");
+      };
+    </script>
+  </body>
+</html>
