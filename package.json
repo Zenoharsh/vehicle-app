@@ -3,9 +3,26 @@
   "version": "1.0.0",
   "description": "Local LAN Vehicle Maintenance App",
   "main": "main.js",
+  "build": {
+    "appId": "in.unit.vehicle.maintenance",
+    "productName": "15th Bn Command",
+    "asar": true,
+    "files": [
+      "**/*"
+    ],
+    "extraResources": [
+      "tailwind.js",
+      "logo.png",
+      "vehicle.gif",
+      "ui_template.html"
+    ],
+    "win": {
+      "target": "nsis"
+    }
+  },
   "scripts": {
     "start": "electron .",
-    "make": "electron-forge make"
+    "build": "electron-builder"
   },
   "keywords": [],
   "author": "Your Name",
@@ -17,9 +34,7 @@
     "sqlite3": "^5.1.6"
   },
   "devDependencies": {
-    "@electron-forge/cli": "^6.4.2",
-    "@electron-forge/maker-squirrel": "^6.4.2",
-    "@electron-forge/maker-zip": "^6.4.2",
-    "electron": "^27.1.0"
+    "electron": "^27.3.11",
+    "electron-builder": "^26.0.12"
   }
 }
