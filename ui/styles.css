@@ -1,0 +1,179 @@
+/* --- GLOBAL STYLES --- */
+body {
+  background-color: linear-gradient(
+    to bottom,
+    #f8fafc 0%,
+    #f3f4f6 40%,
+    #eef2f7 100%
+  );
+  color: #1f2937;
+}
+
+/* --- HERO SECTION (RED + GIF) --- */
+.hero-section {
+  background: linear-gradient(135deg, #5b0f14 0%, #7f1d1d 40%, #b91c1c 100%);
+  color: white;
+  padding: 3.5rem 2.5rem;
+  border-bottom: 5px solid #ffd700;
+  margin-bottom: 2.5rem;
+  border-radius: 0 0 8px 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-gif {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  height: 100%;
+  width: auto;
+  object-fit: cover;
+  opacity: 0.9; /* High opacity per your request */
+  z-index: 0;
+  mask-image: linear-gradient(to left, black 60%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to left, black 60%, transparent 100%);
+}
+
+/* --- TILES (Reverted to the Clean Style you liked) --- */
+.cmd-tile {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  cursor: pointer;
+  padding: 1.5rem;
+  height: 160px;
+  position: relative;
+  overflow: hidden;
+}
+.cmd-tile::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom right,
+    rgba(255, 255, 255, 0.15),
+    transparent
+  );
+  pointer-events: none;
+}
+.cmd-tile:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+  border-color: #4a5d43;
+}
+
+.cmd-tile h3 {
+  margin-top: 0.75rem;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  color: #2e3b29;
+  z-index: 10;
+}
+.cmd-tile svg {
+  z-index: 10;
+}
+
+/* --- INFO DECK --- */
+.info-deck {
+  display: flex;
+  gap: 1.5rem;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+  scroll-snap-type: x mandatory;
+}
+.info-card {
+  min-width: 300px;
+  flex: 1;
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  border-left: 4px solid #4a5d43;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  scroll-snap-align: start;
+}
+
+/* --- SCROLLBAR --- */
+.info-deck::-webkit-scrollbar {
+  height: 8px;
+}
+.info-deck::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.page {
+  display: none;
+}
+.page.active {
+  display: block;
+  animation: fadeIn 0.2s;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+/* --- COMMAND TILE VARIANTS --- */
+.cmd-tile.vehicle {
+  background: linear-gradient(135deg, #f3de00, #9b7608);
+  color: #fff;
+}
+.cmd-tile.maintenance {
+  background: linear-gradient(135deg, #83d7ef, #015268);
+  color: #fff;
+}
+.cmd-tile.fuel {
+  background: linear-gradient(135deg, #4f8a2b, #83ac11);
+  color: #fff;
+}
+.cmd-tile.breakdown {
+  background: linear-gradient(135deg, #8e0e00, #1f1c18);
+  color: #fff;
+}
+.cmd-tile.driver {
+  background: linear-gradient(135deg, #696a6d, #000000);
+  color: #fff;
+}
+.cmd-tile.admin {
+  background: linear-gradient(135deg, #6b5c97, #260097);
+  color: #fff;
+}
+
+/* Override text/icon color safely */
+.cmd-tile.vehicle h3,
+.cmd-tile.maintenance h3,
+.cmd-tile.fuel h3,
+.cmd-tile.breakdown h3,
+.cmd-tile.driver h3,
+.cmd-tile.admin h3,
+.cmd-tile.vehicle svg,
+.cmd-tile.maintenance svg,
+.cmd-tile.fuel svg,
+.cmd-tile.breakdown svg,
+.cmd-tile.driver svg,
+.cmd-tile.admin svg {
+  color: white;
+}
+.cmd-tile::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.08);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.cmd-tile:hover::before {
+  opacity: 1;
+}

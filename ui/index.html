@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <title>15th Bn Command</title>
     <script src="tailwind.js"></script>
+    <link rel="stylesheet" href="styles.css" />
     <script>
       tailwind.config = {
         theme: {
@@ -25,137 +26,6 @@
         },
       };
     </script>
-    <style>
-      body {
-        background-color: #f3f4f6;
-        color: #1f2937;
-      }
-
-      /* --- HERO SECTION (RED + GIF) --- */
-      .hero-section {
-        background: linear-gradient(
-          135deg,
-          #5b0f14 0%,
-          #7f1d1d 40%,
-          #b91c1c 100%
-        );
-        color: white;
-        padding: 3.5rem 2.5rem;
-        border-bottom: 5px solid #ffd700;
-        margin-bottom: 2.5rem;
-        border-radius: 0 0 8px 8px;
-        position: relative;
-        overflow: hidden;
-      }
-
-      .hero-gif {
-        position: absolute;
-        right: 0;
-        bottom: 0;
-        height: 100%;
-        width: auto;
-        object-fit: cover;
-        opacity: 0.9; /* High opacity per your request */
-        z-index: 0;
-        mask-image: linear-gradient(to left, black 60%, transparent 100%);
-        -webkit-mask-image: linear-gradient(
-          to left,
-          black 60%,
-          transparent 100%
-        );
-      }
-
-      /* --- TILES (Reverted to the Clean Style you liked) --- */
-      .cmd-tile {
-        background: white;
-        border: 1px solid #e5e7eb;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        transition: all 0.2s;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        cursor: pointer;
-        padding: 1.5rem;
-        height: 160px;
-        position: relative;
-        overflow: hidden;
-      }
-      .cmd-tile::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(
-          to bottom right,
-          rgba(255, 255, 255, 0.15),
-          transparent
-        );
-        pointer-events: none;
-      }
-      .cmd-tile:hover {
-        transform: translateY(-4px) scale(1.02);
-        box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
-        border-color: #4a5d43;
-      }
-
-      .cmd-tile h3 {
-        margin-top: 0.75rem;
-        font-weight: 700;
-        font-size: 0.9rem;
-        text-transform: uppercase;
-        color: #2e3b29;
-        z-index: 10;
-      }
-      .cmd-tile svg {
-        z-index: 10;
-      }
-
-      /* --- INFO DECK --- */
-      .info-deck {
-        display: flex;
-        gap: 1.5rem;
-        overflow-x: auto;
-        padding-bottom: 1rem;
-        scroll-snap-type: x mandatory;
-      }
-      .info-card {
-        min-width: 300px;
-        flex: 1;
-        background: white;
-        border-radius: 8px;
-        padding: 1.5rem;
-        border-left: 4px solid #4a5d43;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        scroll-snap-align: start;
-      }
-
-      /* --- SCROLLBAR --- */
-      .info-deck::-webkit-scrollbar {
-        height: 8px;
-      }
-      .info-deck::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
-        border-radius: 4px;
-      }
-
-      .page {
-        display: none;
-      }
-      .page.active {
-        display: block;
-        animation: fadeIn 0.2s;
-      }
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-        }
-        to {
-          opacity: 1;
-        }
-      }
-    </style>
   </head>
   <body class="h-full flex flex-col font-sans">
     <nav
@@ -239,10 +109,7 @@
           </div>
 
           <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-            <div
-              onclick="showPage('vehicles')"
-              class="cmd-tile border-l-4 border-army-700"
-            >
+            <div onclick="showPage('vehicles')" class="cmd-tile vehicle">
               <svg
                 class="w-8 h-8 text-army-500"
                 fill="none"
@@ -258,7 +125,7 @@
               </svg>
               <h3>Vehicles</h3>
             </div>
-            <div class="cmd-tile border-l-4 border-blue-500">
+            <div class="cmd-tile maintenance">
               <svg
                 class="w-8 h-8 text-army-500"
                 fill="none"
@@ -274,7 +141,7 @@
               </svg>
               <h3>Training</h3>
             </div>
-            <div class="cmd-tile border-l-4 border-yellow-600">
+            <div class="cmd-tile fuel">
               <svg
                 class="w-8 h-8 text-army-500"
                 fill="none"
@@ -290,7 +157,7 @@
               </svg>
               <h3>Modifications</h3>
             </div>
-            <div class="cmd-tile border-l-4 border-gray-400">
+            <div class="cmd-tile driver">
               <svg
                 class="w-8 h-8 text-army-500"
                 fill="none"
@@ -306,10 +173,7 @@
               </svg>
               <h3>Drivers</h3>
             </div>
-            <div
-              onclick="openModal('vehicle-modal')"
-              class="cmd-tile border-army-500 bg-army-100 hover:bg-army-200"
-            >
+            <div onclick="openModal('vehicle-modal')" class="cmd-tile admin">
               <svg
                 class="w-8 h-8 text-army-900"
                 fill="none"
@@ -500,112 +364,6 @@
         </form>
       </div>
     </div>
-
-    <script>
-      let API_URL = "";
-
-      window.electronAPI.on("APP_CONFIG", (config) => {
-        API_URL = config.apiUrl;
-        document.getElementById("conn-status").innerText = `SERVER: ${
-          config.serverIp
-        } | MODE: ${config.mode.toUpperCase()}`;
-        loadDashboard();
-      });
-
-      async function api(endpoint, opts) {
-        try {
-          return await (await fetch(API_URL + endpoint, opts)).json();
-        } catch (e) {
-          console.error(e);
-          return null;
-        }
-      }
-
-      async function loadDashboard() {
-        try {
-          const stats = await api("/api/dashboard");
-          if (stats) {
-            document.getElementById("stat-off").innerText = stats.off_road;
-            document.getElementById("stat-repair").innerText =
-              stats.active_repairs;
-            document.getElementById("stat-alert-count").innerText =
-              stats.active_repairs;
-          }
-        } catch (e) {}
-      }
-
-      async function loadVehicles() {
-        try {
-          const vehicles = await api("/api/vehicles");
-          const tbody = document.getElementById("vehicle-table-body");
-          tbody.innerHTML = "";
-          if (!vehicles) return;
-
-          vehicles.forEach((v) => {
-            const statusColor =
-              v.status === "On Road"
-                ? "bg-green-100 text-green-800"
-                : "bg-red-100 text-red-800";
-
-            tbody.innerHTML += `
-          <tr class="hover:bg-gray-50">
-            <td class="px-6 py-4 font-mono font-bold text-army-900">${
-              v.ba_no
-            }</td>
-            <td class="px-6 py-4">${v.make} ${v.model}</td>
-            <td class="px-6 py-4">${v.coy}</td>
-            <td class="px-6 py-4">
-              <span class="px-2 py-1 rounded text-xs font-bold ${statusColor}">
-                ${v.status}
-              </span>
-            </td>
-            <td class="px-6 py-4 text-right font-mono">
-              ${v.current_odometer.toLocaleString()}
-            </td>
-          </tr>`;
-          });
-        } catch (e) {}
-      }
-
-      function showPage(id) {
-        document
-          .querySelectorAll(".page")
-          .forEach((p) => p.classList.remove("active"));
-        document.getElementById(id + "-page").classList.add("active");
-        if (id === "home") loadDashboard();
-        if (id === "vehicles") loadVehicles();
-      }
-
-      function openModal(id) {
-        const el = document.getElementById(id);
-        el.classList.remove("hidden");
-        el.classList.add("flex");
-      }
-
-      function closeModal(id) {
-        const el = document.getElementById(id);
-        el.classList.add("hidden");
-        el.classList.remove("flex");
-      }
-
-      document.getElementById("vehicle-form").onsubmit = async (e) => {
-        e.preventDefault();
-        const data = {
-          ba_no: document.getElementById("v-ba").value,
-          make: document.getElementById("v-make").value,
-          model: document.getElementById("v-model").value,
-          coy: document.getElementById("v-coy").value,
-          current_odometer: document.getElementById("v-odo").value,
-          status: "On Road",
-        };
-        await api("/api/vehicles", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
-        });
-        closeModal("vehicle-modal");
-        showPage("vehicles");
-      };
-    </script>
+    <script src="dashboard.js"></script>
   </body>
 </html>

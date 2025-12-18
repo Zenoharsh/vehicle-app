@@ -245,7 +245,9 @@ function createMainWindow(mode, serverIp = "") {
   mainWindow = new BrowserWindow({
     width: 1366,
     height: 768,
-    webPreferences: { preload: path.join(__dirname, "preload.js") },
+    webPreferences: {
+      preload: path.join(__dirname, "preload.js"),
+    },
     autoHideMenuBar: true,
   });
 
@@ -258,11 +260,11 @@ function createMainWindow(mode, serverIp = "") {
     serverIp: mode === "server" ? getLocalIpAddress() : serverIp,
   };
 
-  fs.writeFileSync(path.join(__dirname, "index.html"), getHtmlApp());
-  mainWindow.loadFile("index.html");
-  mainWindow.webContents.on("did-finish-load", () =>
-    mainWindow.webContents.send("APP_CONFIG", config)
-  );
+  mainWindow.loadFile(path.join(__dirname, "ui", "index.html"));
+
+  mainWindow.webContents.on("did-finish-load", () => {
+    mainWindow.webContents.send("APP_CONFIG", config);
+  });
 }
 
 // =====================================================
@@ -305,11 +307,4 @@ function createModeSelectionWindow() {
     <button onclick="require('electron').ipcRenderer.send('SET_MODE','server')">SERVER</button>
     <button onclick="require('electron').ipcRenderer.send('SET_MODE','client')">CLIENT</button>
   `);
-}
-
-// =====================================================
-// UI HTML (UNCHANGED FROM YOUR VERSION)
-// =====================================================
-function getHtmlApp() {
-  return fs.readFileSync(path.join(__dirname, "ui_template.html"), "utf8");
 }
