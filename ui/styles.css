@@ -1,11 +1,6 @@
 /* --- GLOBAL STYLES --- */
 body {
-  background-color: linear-gradient(
-    to bottom,
-    #f8fafc 0%,
-    #f3f4f6 40%,
-    #eef2f7 100%
-  );
+  background: linear-gradient(to bottom, #f1f5f2 0%, #eef3ef 60%, #e9efea 100%);
   color: #1f2937;
 }
 
@@ -30,8 +25,6 @@ body {
   object-fit: cover;
   opacity: 0.9; /* High opacity per your request */
   z-index: 0;
-  mask-image: linear-gradient(to left, black 60%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to left, black 60%, transparent 100%);
 }
 
 /* --- TILES (Reverted to the Clean Style you liked) --- */
@@ -126,50 +119,37 @@ body {
 }
 /* --- COMMAND TILE VARIANTS --- */
 .cmd-tile.vehicle {
-  background: linear-gradient(135deg, #f3de00, #9b7608);
-  color: #fff;
+  background: linear-gradient(135deg, #4a5d43, #2e3b29);
 }
-.cmd-tile.maintenance {
-  background: linear-gradient(135deg, #83d7ef, #015268);
-  color: #fff;
+.cmd-tile.training {
+  background: linear-gradient(135deg, #5b7a6e, #3f5f56);
 }
-.cmd-tile.fuel {
-  background: linear-gradient(135deg, #4f8a2b, #83ac11);
-  color: #fff;
+.cmd-tile.modifications {
+  background: linear-gradient(135deg, #6f8f3a, #567a2c);
 }
-.cmd-tile.breakdown {
-  background: linear-gradient(135deg, #8e0e00, #1f1c18);
-  color: #fff;
-}
-.cmd-tile.driver {
-  background: linear-gradient(135deg, #696a6d, #000000);
-  color: #fff;
+.cmd-tile.drivers {
+  background: linear-gradient(135deg, #3a5f4a, #263f33);
 }
 .cmd-tile.admin {
-  background: linear-gradient(135deg, #6b5c97, #260097);
-  color: #fff;
+  background: linear-gradient(135deg, #2b2b2b, #111111);
 }
 
 /* Override text/icon color safely */
-.cmd-tile.vehicle h3,
-.cmd-tile.maintenance h3,
-.cmd-tile.fuel h3,
-.cmd-tile.breakdown h3,
-.cmd-tile.driver h3,
-.cmd-tile.admin h3,
-.cmd-tile.vehicle svg,
-.cmd-tile.maintenance svg,
-.cmd-tile.fuel svg,
-.cmd-tile.breakdown svg,
-.cmd-tile.driver svg,
-.cmd-tile.admin svg {
-  color: white;
+.cmd-tile h3,
+.cmd-tile svg {
+  color: #ffffff;
+  transition: color 0.2s ease;
+  z-index: 10;
+}
+.cmd-tile:hover h3,
+.cmd-tile:hover svg {
+  color: #000000;
 }
 .cmd-tile::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(255, 255, 255, 0.08);
+  background: white;
   opacity: 0;
   transition: opacity 0.25s ease;
 }
