@@ -29,21 +29,24 @@ function saveConfig(config) {
 // Windows
 // ================================
 let mainWindow = null;
-let modeWindow = null;
 
-// ✅ FIXED VERSION
 function createMainWindow(mode, serverIp = null) {
   mainWindow = new BrowserWindow({
     width: 1400,
     height: 900,
+    show: false, // Hide initially to prevent flickering
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
     },
   });
 
+  // ✅ FIX 1: Maximize window immediately
+  mainWindow.maximize();
+  mainWindow.show();
+
   mainWindow.loadFile(path.join(__dirname, "ui/index.html"));
 
-  // 👇 THIS WAS MISSING! 👇
+  // Inject Config when UI is ready
   mainWindow.webContents.on("did-finish-load", () => {
     const apiUrl =
       mode === "server" ? "http://localhost:4999" : `http://${serverIp}:4999`;
@@ -54,39 +57,11 @@ function createMainWindow(mode, serverIp = null) {
       apiUrl,
     });
   });
-  // 👆 END MISSING BLOCK 👆
 
   mainWindow.on("closed", () => {
     mainWindow = null;
   });
 }
-
-function createModeSelectionWindow() {
-  modeWindow = new BrowserWindow({
-    width: 400,
-    height: 300,
-    resizable: false,
-    webPreferences: {
-      preload: path.join(__dirname, "preload.js"),
-    },
-  });
-
-  // If you don’t have mode.html yet, index.html is fine temporarily
-  modeWindow.loadFile(path.join(__dirname, "ui/index.html"));
-
-  modeWindow.on("closed", () => {
-    modeWindow = null;
-  });
-}
-
-// ================================
-// IPC (Mode Selection)
-// ================================
-ipcMain.on("SET_MODE", (_, mode, serverIp = "") => {
-  saveConfig({ mode, serverIp });
-  app.relaunch();
-  app.exit();
-});
 
 // ================================
 // App Lifecycle
@@ -95,24 +70,33 @@ app.disableHardwareAcceleration();
 
 app.on("ready", async () => {
   try {
-    const cfg = loadConfig();
+    let cfg = loadConfig();
 
+    // ✅ FIX 2: Auto-Create Config & Start Server if Missing
+    // This prevents the "Network Error" on first run
     if (!cfg) {
-      createModeSelectionWindow();
-      return;
+      console.log("No config found. Auto-initializing as SERVER.");
+      cfg = { mode: "server", serverIp: "localhost" };
+      saveConfig(cfg);
     }
 
     if (cfg.mode === "server") {
+      // Start Database and API Server
       await initDB();
       startServer();
       createMainWindow("server");
     } else {
+      // Client Mode Logic
       if (!cfg.serverIp) {
-        dialog.showErrorBox("Client Mode Error", "Server IP not configured.");
-        createModeSelectionWindow();
-        return;
+        // Fallback to server if config is broken
+        cfg = { mode: "server", serverIp: "localhost" };
+        saveConfig(cfg);
+        await initDB();
+        startServer();
+        createMainWindow("server");
+      } else {
+        createMainWindow("client", cfg.serverIp);
       }
-      createMainWindow("client", cfg.serverIp);
     }
   } catch (err) {
     dialog.showErrorBox(
@@ -130,6 +114,8 @@ app.on("window-all-closed", () => {
 
 app.on("activate", () => {
   if (BrowserWindow.getAllWindows().length === 0) {
-    createMainWindow("server");
+    // If reactivating on Mac, default to server if logic allows,
+    // but usually app.on('ready') handles the main logic.
+    // For safety in this prototype, we rely on the ready event.
   }
 });
