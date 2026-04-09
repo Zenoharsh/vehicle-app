@@ -278,6 +278,8 @@ async function openVehicleDetail(vehicleId) {
   } else {
     modsContainer.innerHTML = `<p class="text-gray-400 italic text-center py-4">No modifications found.</p>`;
   }
+  // Render CME Checks
+  renderVehicleChecks(data);
 
   // 4. Toggle Views
   document.getElementById("vehicle-detail").classList.remove("hidden");
