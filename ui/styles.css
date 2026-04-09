@@ -1,6 +1,6 @@
 /* --- GLOBAL STYLES --- */
 body {
-  background: linear-gradient(to bottom, #f1f5f2 0%, #eef3ef 60%, #e9efea 100%);
+  /* Removed the gradient, Tailwind will handle the body background now */
   color: #1f2937;
 }
 
@@ -11,7 +11,7 @@ body {
   padding: 3.5rem 2.5rem;
   border-bottom: 5px solid #ffd700;
   margin-bottom: 2.5rem;
-  border-radius: 0 0 8px 8px;
+  border-radius: 0 0 8px 8px; /* Kept your slight rounding here */
   position: relative;
   overflow: hidden;
 }
@@ -23,85 +23,11 @@ body {
   height: 100%;
   width: auto;
   object-fit: cover;
-  opacity: 0.9; /* High opacity per your request */
+  opacity: 0.9;
   z-index: 0;
 }
 
-/* --- TILES (Reverted to the Clean Style you liked) --- */
-.cmd-tile {
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  transition: all 0.2s;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  cursor: pointer;
-  padding: 1.5rem;
-  height: 160px;
-  position: relative;
-  overflow: hidden;
-}
-.cmd-tile::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to bottom right,
-    rgba(255, 255, 255, 0.15),
-    transparent
-  );
-  pointer-events: none;
-}
-.cmd-tile:hover {
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
-  border-color: #4a5d43;
-}
-
-.cmd-tile h3 {
-  margin-top: 0.75rem;
-  font-weight: 700;
-  font-size: 0.9rem;
-  text-transform: uppercase;
-  color: #2e3b29;
-  z-index: 10;
-}
-.cmd-tile svg {
-  z-index: 10;
-}
-
-/* --- INFO DECK --- */
-.info-deck {
-  display: flex;
-  gap: 1.5rem;
-  overflow-x: auto;
-  padding-bottom: 1rem;
-  scroll-snap-type: x mandatory;
-}
-.info-card {
-  min-width: 300px;
-  flex: 1;
-  background: white;
-  border-radius: 8px;
-  padding: 1.5rem;
-  border-left: 4px solid #4a5d43;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  scroll-snap-align: start;
-}
-
-/* --- SCROLLBAR --- */
-.info-deck::-webkit-scrollbar {
-  height: 8px;
-}
-.info-deck::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 4px;
-}
-
+/* --- PAGE TOGGLING --- */
 .page {
   display: none;
 }
@@ -117,46 +43,8 @@ body {
     opacity: 1;
   }
 }
-/* --- COMMAND TILE VARIANTS --- */
-.cmd-tile.vehicle {
-  background: linear-gradient(135deg, #4a5d43, #2e3b29);
-}
-.cmd-tile.training {
-  background: linear-gradient(135deg, #5b7a6e, #3f5f56);
-}
-.cmd-tile.modifications {
-  background: linear-gradient(135deg, #6f8f3a, #567a2c);
-}
-.cmd-tile.drivers {
-  background: linear-gradient(135deg, #3a5f4a, #263f33);
-}
-.cmd-tile.admin {
-  background: linear-gradient(135deg, #2b2b2b, #111111);
-}
 
-/* Override text/icon color safely */
-.cmd-tile h3,
-.cmd-tile svg {
-  color: #ffffff;
-  transition: color 0.2s ease;
-  z-index: 10;
-}
-.cmd-tile:hover h3,
-.cmd-tile:hover svg {
-  color: #000000;
-}
-.cmd-tile::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: white;
-  opacity: 0;
-  transition: opacity 0.25s ease;
-}
-
-.cmd-tile:hover::before {
-  opacity: 1;
-}
+/* --- COMMAND TEXT STYLES --- */
 .command-text-preview {
   max-height: 120px;
   overflow-y: auto;

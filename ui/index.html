@@ -62,7 +62,7 @@
       }
     </style>
   </head>
-  <body class="h-full flex flex-col font-sans bg-gray-100">
+  <body class="h-full flex flex-col font-sans bg-army-100">
     <nav
       class="bg-army-900 text-white px-8 py-4 flex justify-between items-center border-b-4 border-gold-500 z-20"
     >
@@ -105,8 +105,13 @@
           <div
             class="hero-section flex items-center gap-8 bg-army-700 p-8 border-2 border-army-900 shadow-hard mb-8 relative overflow-hidden"
           >
+            <img
+              src="vehicle.gif"
+              class="absolute right-0 bottom-0 h-full w-auto object-cover opacity-90 z-0 pointer-events-none"
+            />
+
             <div
-              class="h-24 w-24 bg-white flex items-center justify-center border-4 border-gold-500 shadow-xl z-10 shrink-0"
+              class="h-24 w-24 bg-white flex items-center justify-center border-4 border-gold-500 shadow-xl z-10 shrink-0 relative"
             >
               <img
                 src="logo.png"
@@ -119,7 +124,7 @@
                 >15</span
               >
             </div>
-            <div class="z-10">
+            <div class="z-10 relative">
               <h1 class="text-4xl font-stencil text-gold-500 tracking-wider">
                 15th Battalion
               </h1>
@@ -146,33 +151,66 @@
           <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
             <div
               onclick="showPage('vehicles')"
-              class="cmd-tile bg-gray-200 py-6"
+              class="cursor-pointer bg-army-700 border-2 border-army-900 py-8 flex flex-col items-center justify-center hover:bg-army-500 hover:-translate-y-1 transition-all shadow-hard group"
             >
-              <h3 class="text-black font-black">Vehicles</h3>
+              <h3
+                class="text-white font-black font-mono uppercase text-sm group-hover:text-gold-500"
+              >
+                Vehicles
+              </h3>
             </div>
+
             <div
               onclick="showPage('training')"
-              class="cmd-tile bg-gray-200 py-6"
+              class="cursor-pointer bg-slate-700 border-2 border-army-900 py-8 flex flex-col items-center justify-center hover:bg-slate-500 hover:-translate-y-1 transition-all shadow-hard group"
             >
-              <h3 class="text-black font-black">Training</h3>
+              <h3
+                class="text-white font-black font-mono uppercase text-sm group-hover:text-gold-500"
+              >
+                Training
+              </h3>
             </div>
+
             <div
               onclick="showPage('modifications')"
-              class="cmd-tile bg-gray-200 py-6"
+              class="cursor-pointer bg-yellow-700 border-2 border-army-900 py-8 flex flex-col items-center justify-center hover:bg-yellow-600 hover:-translate-y-1 transition-all shadow-hard group"
             >
-              <h3 class="text-black font-black">Mods</h3>
+              <h3
+                class="text-white font-black font-mono uppercase text-sm group-hover:text-black"
+              >
+                Mods
+              </h3>
             </div>
+
             <div
               onclick="showPage('drivers')"
-              class="cmd-tile bg-gray-200 py-6"
+              class="cursor-pointer bg-gray-700 border-2 border-army-900 py-8 flex flex-col items-center justify-center hover:bg-gray-500 hover:-translate-y-1 transition-all shadow-hard group"
             >
-              <h3 class="text-black font-black">Drivers</h3>
+              <h3
+                class="text-white font-black font-mono uppercase text-sm group-hover:text-gold-500"
+              >
+                Drivers
+              </h3>
+            </div>
+            <div
+              onclick="showPage('maintenance')"
+              class="cursor-pointer bg-army-500 border-2 border-army-900 py-8 flex flex-col items-center justify-center hover:bg-army-600 hover:-translate-y-1 transition-all shadow-hard group"
+            >
+              <h3
+                class="text-white font-black font-mono uppercase text-sm group-hover:text-black"
+              >
+                Daily Parade
+              </h3>
             </div>
             <div
               onclick="openModal('vehicle-modal')"
-              class="cmd-tile bg-army-100 py-6"
+              class="cursor-pointer bg-black border-2 border-army-900 py-8 flex flex-col items-center justify-center hover:bg-army-900 hover:-translate-y-1 transition-all shadow-hard group"
             >
-              <h3 class="text-army-900 font-black">+ Add Eqpt</h3>
+              <h3
+                class="font-black font-mono uppercase text-sm text-gold-500 group-hover:text-white"
+              >
+                + Add Eqpt
+              </h3>
             </div>
           </div>
 
@@ -568,7 +606,56 @@
             </table>
           </div>
         </div>
+        <div id="maintenance-page" class="page">
+          <div class="flex justify-between items-center mb-6">
+            <h2
+              class="text-3xl font-stencil text-army-900 tracking-wide uppercase"
+            >
+              Daily Parade / Maint Roll
+            </h2>
+            <div class="flex gap-3">
+              <button
+                onclick="saveBulkMaintenance()"
+                class="bg-army-700 text-white px-6 py-2 border-2 border-army-900 font-mono font-bold uppercase hover:bg-army-900 transition-colors shadow-hard active:translate-y-1 active:shadow-none"
+              >
+                ✓ Commit Roll
+              </button>
+              <button
+                onclick="showPage('home')"
+                class="bg-white text-gray-800 px-4 py-2 border-2 border-gray-400 font-mono font-bold uppercase hover:bg-gray-100"
+              >
+                Back
+              </button>
+            </div>
+          </div>
 
+          <div class="bg-white border-2 border-army-900 shadow-hard">
+            <table class="w-full text-left font-mono">
+              <thead
+                class="bg-army-900 text-white text-xs uppercase tracking-wider"
+              >
+                <tr>
+                  <th class="px-6 py-4 w-16">S.No</th>
+                  <th class="px-6 py-4">BA Number</th>
+                  <th class="px-6 py-4">Coy</th>
+                  <th
+                    class="px-6 py-4 text-center border-l-2 border-army-700 bg-army-800"
+                  >
+                    Daily Check
+                  </th>
+                  <th class="px-6 py-4 text-center bg-army-800">
+                    Monthly Check
+                  </th>
+                  <th class="px-6 py-4">Remarks / Faults</th>
+                </tr>
+              </thead>
+              <tbody
+                id="maint-table-body"
+                class="divide-y-2 divide-gray-300 text-sm font-bold text-gray-800"
+              ></tbody>
+            </table>
+          </div>
+        </div>
         <div id="repairs-page" class="page">
           <div class="flex justify-between items-center mb-6">
             <h2
