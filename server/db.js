@@ -7,7 +7,7 @@ let db;
 
 async function initDB() {
   // 🔴 CHANGED TO 'final' TO GUARANTEE A FRESH START
-  const dbPath = path.join(app.getPath("userData"), "unit_command_final.db");
+  const dbPath = path.join(app.getPath("userData"), "unit_command_final_v2.db");
   db = await open({ filename: dbPath, driver: sqlite3.Database });
 
   // 🔒 ALL SCHEMA LIVES HERE
@@ -73,7 +73,17 @@ async function initDB() {
       remarks TEXT,
       FOREIGN KEY(vehicle_id) REFERENCES vehicles(vehicle_id)
     );
-
+    CREATE TABLE IF NOT EXISTS daily_inspections (
+      inspection_id INTEGER PRIMARY KEY AUTOINCREMENT,
+      vehicle_id INTEGER NOT NULL,
+      inspection_date TEXT NOT NULL,
+      tires_checked INTEGER DEFAULT 0,
+      oil_checked INTEGER DEFAULT 0,
+      coolant_checked INTEGER DEFAULT 0,
+      monthly_check INTEGER DEFAULT 0,
+      remarks TEXT,
+      FOREIGN KEY(vehicle_id) REFERENCES vehicles(vehicle_id)
+    );
     /* This table is required for SOP/Instructions Modals */
     CREATE TABLE IF NOT EXISTS command_texts (
       key TEXT PRIMARY KEY,
