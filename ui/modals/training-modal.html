@@ -1,0 +1,60 @@
+<div
+      id="training-modal"
+      class="fixed inset-0 bg-black/70 hidden items-center justify-center z-50"
+    >
+      <div
+        class="bg-gray-50 w-full max-w-md border-4 border-army-900 shadow-hard p-6"
+      >
+        <h3
+          class="text-xl font-bold text-army-900 mb-4 uppercase border-b-2 border-gray-400 pb-2 font-mono"
+        >
+          Record Training
+        </h3>
+        <form id="training-form" class="space-y-4 font-mono">
+          <input
+            id="t-title"
+            placeholder="Event Title"
+            class="w-full p-2 border-2 border-gray-400 outline-none"
+            required
+          />
+          <select
+            id="t-category"
+            class="w-full p-2 border-2 border-gray-400 outline-none"
+            required
+          >
+            <option value="">Category</option>
+            <option value="Physical">Physical</option>
+            <option value="Technical">Technical</option>
+            <option value="Firing">Firing</option>
+            <option value="Other">Other</option>
+          </select>
+          <input
+            id="t-date"
+            type="date"
+            class="w-full p-2 border-2 border-gray-400 outline-none"
+            required
+          />
+          <textarea
+            id="t-remarks"
+            placeholder="Remarks/Str..."
+            class="w-full p-2 border-2 border-gray-400 outline-none"
+            rows="2"
+          ></textarea>
+          <div class="flex justify-end gap-3 pt-4 border-t-2 border-gray-300">
+            <button
+              type="button"
+              onclick="closeModal('training-modal')"
+              class="px-4 py-2 border-2 border-gray-400 uppercase font-bold hover:bg-gray-200"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="px-4 py-2 bg-army-700 text-white border-2 border-army-900 uppercase font-bold hover:bg-army-900"
+            >
+              Save
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>

@@ -1,0 +1,50 @@
+<div id="maintenance-page" class="page">
+          <div class="flex justify-between items-center mb-6">
+            <h2
+              class="text-3xl font-stencil text-army-900 tracking-wide uppercase"
+            >
+              Daily Parade / Maint Roll
+            </h2>
+            <div class="flex gap-3">
+              <button
+                onclick="saveBulkMaintenance()"
+                class="bg-army-700 text-white px-6 py-2 border-2 border-army-900 font-mono font-bold uppercase hover:bg-army-900 transition-colors shadow-hard active:translate-y-1 active:shadow-none"
+              >
+                ✓ Commit Roll
+              </button>
+              <button
+                onclick="showPage('home')"
+                class="bg-white text-gray-800 px-4 py-2 border-2 border-gray-400 font-mono font-bold uppercase hover:bg-gray-100"
+              >
+                Back
+              </button>
+            </div>
+          </div>
+
+          <div class="bg-white border-2 border-army-900 shadow-hard">
+            <table class="w-full text-left font-mono">
+              <thead
+                class="bg-army-900 text-white text-xs uppercase tracking-wider"
+              >
+                <tr>
+                  <th class="px-6 py-4 w-16">S.No</th>
+                  <th class="px-6 py-4">BA Number</th>
+                  <th class="px-6 py-4">Coy</th>
+                  <th
+                    class="px-6 py-4 text-center border-l-2 border-army-700 bg-army-800"
+                  >
+                    Daily Check
+                  </th>
+                  <th class="px-6 py-4 text-center bg-army-800">
+                    Monthly Check
+                  </th>
+                  <th class="px-6 py-4">Remarks / Faults</th>
+                </tr>
+              </thead>
+              <tbody
+                id="maint-table-body"
+                class="divide-y-2 divide-gray-300 text-sm font-bold text-gray-800"
+              ></tbody>
+            </table>
+          </div>
+        </div>

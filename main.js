@@ -6,6 +6,19 @@ const path = require("path");
 const fs = require("fs");
 
 // ================================
+// IPC Handlers
+// ================================
+ipcMain.handle("load-html", async (event, filename) => {
+  try {
+    const filePath = path.join(__dirname, "ui", filename);
+    return fs.readFileSync(filePath, "utf8");
+  } catch (err) {
+    console.error("Failed to load HTML:", err);
+    return "";
+  }
+});
+
+// ================================
 // Server & DB Imports
 // ================================
 const { initDB } = require("./server/db");

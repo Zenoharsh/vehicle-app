@@ -14,7 +14,10 @@ let currentCommandKey = null;
 // ===============================
 // 2. ELECTRON BRIDGE / INIT
 // ===============================
-window.electronAPI.on("APP_CONFIG", (config) => {
+window.electronAPI.on("APP_CONFIG", async (config) => {
+  await loadAllHTMLComponents();
+  initForms();
+
   API_URL = config.apiUrl;
   currentAppConfig = config;
 
@@ -28,6 +31,32 @@ window.electronAPI.on("APP_CONFIG", (config) => {
   initSettingsPage();
   loadDashboard(); // Initial data load
 });
+
+async function loadAllHTMLComponents() {
+  const pages = ['home', 'settings', 'vehicles', 'drivers', 'modifications', 'training', 'maintenance', 'repairs'];
+  const modals = ['vehicle-modal', 'command-text-modal', 'driver-modal', 'mod-modal', 'training-modal', 'repair-modal'];
+
+  const pagesContainer = document.getElementById('pages-container');
+  const modalsContainer = document.getElementById('modals-container');
+
+  if (!pagesContainer || !modalsContainer) return;
+
+  for (const page of pages) {
+    const html = await window.electronAPI.loadHTML(`pages/${page}.html`);
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    if (div.firstElementChild) pagesContainer.appendChild(div.firstElementChild);
+  }
+
+  for (const modal of modals) {
+    const html = await window.electronAPI.loadHTML(`modals/${modal}.html`);
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    if (div.firstElementChild) modalsContainer.appendChild(div.firstElementChild);
+  }
+}
+
+function initForms() {
 
 // ===============================
 // 3. CORE API UTILITY
@@ -240,36 +269,36 @@ async function loadVehicles() {
   });
 }
 
-const vForm = document.getElementById("vehicle-form");
-if (vForm) {
-  vForm.onsubmit = async (e) => {
-    e.preventDefault();
-    const data = {
-      ba_no: document.getElementById("v-ba").value,
-      vehicle_type: document.getElementById("v-type").value,
-      coy: document.getElementById("v-coy").value,
-      general_remarks: document.getElementById("v-remarks").value,
-    };
-    try {
-      const response = await fetch(API_URL + "/api/vehicles", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      const result = await response.json();
-      if (result.success) {
-        alert("✅ SUCCESS: Vehicle added!");
-        closeModal("vehicle-modal");
-        loadVehicles();
-        e.target.reset();
-      } else {
-        alert("❌ SERVER ERROR: " + JSON.stringify(result));
+  const vForm = document.getElementById("vehicle-form");
+  if (vForm) {
+    vForm.onsubmit = async (e) => {
+      e.preventDefault();
+      const data = {
+        ba_no: document.getElementById("v-ba").value,
+        vehicle_type: document.getElementById("v-type").value,
+        coy: document.getElementById("v-coy").value,
+        general_remarks: document.getElementById("v-remarks").value,
+      };
+      try {
+        const response = await fetch(API_URL + "/api/vehicles", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+        const result = await response.json();
+        if (result.success) {
+          alert("✅ SUCCESS: Vehicle added!");
+          closeModal("vehicle-modal");
+          loadVehicles();
+          e.target.reset();
+        } else {
+          alert("❌ SERVER ERROR: " + JSON.stringify(result));
+        }
+      } catch (err) {
+        alert("❌ NETWORK ERROR: " + err.message);
       }
-    } catch (err) {
-      alert("❌ NETWORK ERROR: " + err.message);
-    }
-  };
-}
+    };
+  }
 
 // --- VEHICLE DETAIL ---
 async function openVehicleDetail(vehicleId) {
@@ -547,33 +576,33 @@ async function loadVehicleMeta() {
   });
 }
 
-const dForm = document.getElementById("driver-form");
-if (dForm) {
-  dForm.onsubmit = async (e) => {
-    e.preventDefault();
-    const data = {
-      army_no: document.getElementById("d-army").value,
-      name: document.getElementById("d-name").value,
-      coy: document.getElementById("d-coy").value,
-      vehicle_type: document.getElementById("d-type").value,
-      license_issued: document.getElementById("d-license").value,
-      remarks: document.getElementById("d-remarks").value,
+  const dForm = document.getElementById("driver-form");
+  if (dForm) {
+    dForm.onsubmit = async (e) => {
+      e.preventDefault();
+      const data = {
+        army_no: document.getElementById("d-army").value,
+        name: document.getElementById("d-name").value,
+        coy: document.getElementById("d-coy").value,
+        vehicle_type: document.getElementById("d-type").value,
+        license_issued: document.getElementById("d-license").value,
+        remarks: document.getElementById("d-remarks").value,
+      };
+      const res = await api("/api/drivers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (res && res.success) {
+        alert("✅ Driver added!");
+        closeModal("driver-modal");
+        loadDrivers();
+        e.target.reset();
+      } else {
+        alert("❌ Error adding driver");
+      }
     };
-    const res = await api("/api/drivers", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
-    if (res && res.success) {
-      alert("✅ Driver added!");
-      closeModal("driver-modal");
-      loadDrivers();
-      e.target.reset();
-    } else {
-      alert("❌ Error adding driver");
-    }
-  };
-}
+  }
 
 // ===============================
 // 10. MODIFICATIONS MODULE
@@ -613,32 +642,32 @@ async function loadVehicleDropdown() {
   });
 }
 
-const mForm = document.getElementById("mod-form");
-if (mForm) {
-  mForm.onsubmit = async (e) => {
-    e.preventDefault();
-    const data = {
-      vehicle_id: document.getElementById("m-vehicle-id").value,
-      modification: document.getElementById("m-title").value,
-      authority: document.getElementById("m-auth").value,
-      date: document.getElementById("m-date").value,
-      remarks: document.getElementById("m-remarks").value,
+  const mForm = document.getElementById("mod-form");
+  if (mForm) {
+    mForm.onsubmit = async (e) => {
+      e.preventDefault();
+      const data = {
+        vehicle_id: document.getElementById("m-vehicle-id").value,
+        modification: document.getElementById("m-title").value,
+        authority: document.getElementById("m-auth").value,
+        date: document.getElementById("m-date").value,
+        remarks: document.getElementById("m-remarks").value,
+      };
+      const res = await api("/api/modifications", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (res && res.success) {
+        alert("✅ Modification recorded!");
+        closeModal("mod-modal");
+        loadModifications();
+        e.target.reset();
+      } else {
+        alert("❌ Error recording mod");
+      }
     };
-    const res = await api("/api/modifications", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
-    if (res && res.success) {
-      alert("✅ Modification recorded!");
-      closeModal("mod-modal");
-      loadModifications();
-      e.target.reset();
-    } else {
-      alert("❌ Error recording mod");
-    }
-  };
-}
+  }
 
 // ===============================
 // 11. TRAINING MODULE
@@ -669,31 +698,31 @@ async function loadTraining() {
   });
 }
 
-const tForm = document.getElementById("training-form");
-if (tForm) {
-  tForm.onsubmit = async (e) => {
-    e.preventDefault();
-    const data = {
-      title: document.getElementById("t-title").value,
-      category: document.getElementById("t-category").value,
-      conducted_on: document.getElementById("t-date").value,
-      remarks: document.getElementById("t-remarks").value,
+  const tForm = document.getElementById("training-form");
+  if (tForm) {
+    tForm.onsubmit = async (e) => {
+      e.preventDefault();
+      const data = {
+        title: document.getElementById("t-title").value,
+        category: document.getElementById("t-category").value,
+        conducted_on: document.getElementById("t-date").value,
+        remarks: document.getElementById("t-remarks").value,
+      };
+      const res = await api("/api/training", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (res && res.success) {
+        alert("✅ Training event recorded!");
+        closeModal("training-modal");
+        loadTraining();
+        e.target.reset();
+      } else {
+        alert("❌ Error recording training");
+      }
     };
-    const res = await api("/api/training", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
-    if (res && res.success) {
-      alert("✅ Training event recorded!");
-      closeModal("training-modal");
-      loadTraining();
-      e.target.reset();
-    } else {
-      alert("❌ Error recording training");
-    }
-  };
-}
+  }
 
 // ===============================
 // 12. REPAIRS MODULE
@@ -757,31 +786,32 @@ async function loadRepairDropdown() {
   });
 }
 
-const rForm = document.getElementById("repair-form");
-if (rForm) {
-  rForm.onsubmit = async (e) => {
-    e.preventDefault();
-    const data = {
-      vehicle_id: document.getElementById("r-vehicle-id").value,
-      defect: document.getElementById("r-defect").value,
-      status: document.getElementById("r-status").value,
-      reported_on: document.getElementById("r-date").value,
-      remarks: document.getElementById("r-remarks").value,
+  const rForm = document.getElementById("repair-form");
+  if (rForm) {
+    rForm.onsubmit = async (e) => {
+      e.preventDefault();
+      const data = {
+        vehicle_id: document.getElementById("r-vehicle-id").value,
+        defect: document.getElementById("r-defect").value,
+        status: document.getElementById("r-status").value,
+        reported_on: document.getElementById("r-date").value,
+        remarks: document.getElementById("r-remarks").value,
+      };
+      const res = await api("/api/repairs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (res && res.success) {
+        alert("⚠️ Defect reported successfully.");
+        closeModal("repair-modal");
+        loadRepairs();
+        e.target.reset();
+      } else {
+        alert("❌ Error reporting defect");
+      }
     };
-    const res = await api("/api/repairs", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
-    if (res && res.success) {
-      alert("⚠️ Defect reported successfully.");
-      closeModal("repair-modal");
-      loadRepairs();
-      e.target.reset();
-    } else {
-      alert("❌ Error reporting defect");
-    }
-  };
+  }
 }
 
 async function resolveRepair(id) {

@@ -1,0 +1,33 @@
+<div
+      id="command-text-modal"
+      class="fixed inset-0 bg-black/70 hidden items-center justify-center z-50"
+    >
+      <div
+        class="bg-white w-full max-w-2xl border-4 border-army-900 shadow-hard p-6"
+      >
+        <h3
+          id="command-text-title"
+          class="text-xl font-bold mb-4 uppercase font-mono text-army-900 border-b-2 border-gray-300 pb-2"
+        ></h3>
+        <textarea
+          id="command-text-editor"
+          class="w-full h-64 p-4 border-2 border-gray-400 font-mono focus:border-army-900 outline-none resize-none"
+        ></textarea>
+        <div
+          class="flex justify-end gap-3 mt-4 pt-4 border-t-2 border-gray-300"
+        >
+          <button
+            onclick="closeModal('command-text-modal')"
+            class="px-4 py-2 border-2 border-gray-400 uppercase font-mono font-bold hover:bg-gray-200"
+          >
+            Cancel
+          </button>
+          <button
+            onclick="saveCommandText()"
+            class="px-4 py-2 bg-army-700 text-white border-2 border-army-900 uppercase font-mono font-bold hover:bg-army-900"
+          >
+            Save Data
+          </button>
+        </div>
+      </div>
+    </div>

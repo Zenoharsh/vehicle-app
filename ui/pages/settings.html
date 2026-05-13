@@ -1,0 +1,51 @@
+<div id="settings-page" class="page">
+          <div
+            class="max-w-2xl mx-auto mt-8 bg-gray-50 p-8 border-2 border-army-900 shadow-hard"
+          >
+            <h2
+              class="text-2xl font-bold text-army-900 mb-6 uppercase border-b-4 border-army-700 pb-2 font-mono"
+            >
+              Network Configuration
+            </h2>
+
+            <div class="mb-6">
+              <label
+                class="block font-bold text-gray-800 mb-2 uppercase text-sm font-mono"
+                >Operating Mode</label
+              >
+              <select
+                id="config-mode"
+                class="w-full p-3 border-2 border-gray-400 bg-white focus:border-army-700 focus:outline-none font-mono font-bold"
+                onchange="toggleIPField()"
+              >
+                <option value="server">MAIN SERVER (Hosts Database)</option>
+                <option value="client">CLIENT NODE (Connects to Server)</option>
+              </select>
+            </div>
+
+            <div class="mb-8">
+              <label
+                class="block font-bold text-gray-800 mb-2 uppercase text-sm font-mono"
+                >Target Server IP (IPv4)</label
+              >
+              <input
+                type="text"
+                id="config-ip"
+                class="w-full p-3 border-2 border-gray-400 bg-white font-mono focus:border-army-700 focus:bg-yellow-50 focus:outline-none"
+                placeholder="e.g., 192.168.1.10"
+              />
+              <p class="text-xs text-gray-500 mt-2 font-mono italic">
+                Required for Client Node to locate the master database.
+              </p>
+            </div>
+
+            <div class="flex justify-end pt-4 border-t-2 border-gray-300">
+              <button
+                onclick="saveSettings()"
+                class="bg-army-700 text-white px-6 py-3 font-bold font-mono uppercase tracking-widest border-2 border-army-900 hover:bg-army-900 transition-colors"
+              >
+                Save & Reboot System
+              </button>
+            </div>
+          </div>
+        </div>

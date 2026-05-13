@@ -1,0 +1,68 @@
+<div
+      id="driver-modal"
+      class="fixed inset-0 bg-black/70 hidden items-center justify-center z-50"
+    >
+      <div
+        class="bg-gray-50 w-full max-w-md border-4 border-army-900 shadow-hard p-6"
+      >
+        <h3
+          class="text-xl font-bold text-army-900 mb-4 uppercase border-b-2 border-gray-400 pb-2 font-mono"
+        >
+          New Driver Entry
+        </h3>
+        <form id="driver-form" class="space-y-4 font-mono">
+          <input
+            id="d-army"
+            placeholder="Army No"
+            class="w-full p-2 border-2 border-gray-400 focus:border-army-900 outline-none"
+            required
+          />
+          <input
+            id="d-name"
+            placeholder="Name"
+            class="w-full p-2 border-2 border-gray-400 focus:border-army-900 outline-none"
+            required
+          />
+          <select
+            id="d-coy"
+            class="w-full p-2 border-2 border-gray-400 outline-none"
+            required
+          >
+            <option value="">Select Coy</option>
+          </select>
+          <select
+            id="d-type"
+            class="w-full p-2 border-2 border-gray-400 outline-none"
+            required
+          >
+            <option value="">Veh Type Qual</option>
+          </select>
+          <input
+            id="d-license"
+            type="date"
+            class="w-full p-2 border-2 border-gray-400 outline-none"
+          />
+          <textarea
+            id="d-remarks"
+            placeholder="Remarks..."
+            class="w-full p-2 border-2 border-gray-400 outline-none"
+            rows="2"
+          ></textarea>
+          <div class="flex justify-end gap-3 pt-4 border-t-2 border-gray-300">
+            <button
+              type="button"
+              onclick="closeModal('driver-modal')"
+              class="px-4 py-2 border-2 border-gray-400 uppercase font-bold hover:bg-gray-200"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="px-4 py-2 bg-army-700 text-white border-2 border-army-900 uppercase font-bold hover:bg-army-900"
+            >
+              Add
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>

@@ -19,4 +19,5 @@ contextBridge.exposeInMainWorld("electronAPI", {
       ipcRenderer.on(channel, (event, ...args) => callback(...args));
     }
   },
+  loadHTML: (filename) => ipcRenderer.invoke("load-html", filename),
 });

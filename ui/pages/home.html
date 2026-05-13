@@ -1,0 +1,227 @@
+<div id="home-page" class="page active">
+          <div
+            class="hero-section flex items-center gap-8 bg-army-700 p-8 border-2 border-army-900 shadow-hard mb-8 relative overflow-hidden"
+          >
+            <img
+              src="assets/vehicle.gif"
+              class="absolute right-0 bottom-0 h-full w-auto object-cover opacity-90 z-0 pointer-events-none"
+            />
+
+            <div
+              class="h-24 w-24 bg-white flex items-center justify-center border-4 border-gold-500 shadow-xl z-10 shrink-0 relative"
+            >
+              <img
+                src="assets/logo.png"
+                onerror="this.style.display='none'; this.nextElementSibling.style.display='block'"
+                class="h-full w-full object-cover"
+              />
+              <span
+                style="display: none"
+                class="text-army-900 font-black text-3xl"
+                >15</span
+              >
+            </div>
+            <div class="z-10 relative">
+              <h1 class="text-4xl font-stencil text-gold-500 tracking-wider">
+                15th Battalion
+              </h1>
+              <p
+                class="text-lg font-bold tracking-[0.2em] uppercase text-gray-200"
+              >
+                Brigade of The Guards
+              </p>
+              <div
+                class="mt-4 flex gap-6 text-xs font-mono font-bold tracking-wide"
+              >
+                <span
+                  class="px-3 py-1 bg-black text-red-400 border border-red-500"
+                  >OFF ROAD: <b id="stat-off">--</b></span
+                >
+                <span
+                  class="px-3 py-1 bg-black text-yellow-400 border border-yellow-500"
+                  >REPAIRS: <b id="stat-repair">--</b></span
+                >
+              </div>
+            </div>
+          </div>
+          <div
+            onclick="showPage('maintenance')"
+            class="cursor-pointer bg-army-100 border-2 border-army-700 border-l-[12px] py-4 px-6 mb-8 flex items-center justify-between hover:bg-green-100 transition-all shadow-[4px_4px_0px_0px_#2E3B29] hover:translate-x-1 hover:translate-y-1 hover:shadow-none group"
+          >
+            <div class="flex items-center gap-5">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-10 w-10 text-army-900 group-hover:scale-110 transition-transform duration-200"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+                />
+              </svg>
+              <div>
+                <h3
+                  class="text-army-900 font-black font-stencil uppercase text-2xl tracking-wide transition-colors"
+                >
+                  Daily Parade & Maint Roll
+                </h3>
+                <p
+                  class="text-army-700 font-mono text-xs uppercase tracking-widest mt-1 font-bold"
+                >
+                  Pending Action: Mandatory Fleet Inspection
+                </p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <span
+                class="text-army-900 font-mono font-bold text-lg group-hover:mr-2 transition-all"
+                >COMMENCE</span
+              >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6 text-army-900"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M14 5l7 7m0 0l-7 7m7-7H3"
+                />
+              </svg>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+            <div
+              onclick="showPage('vehicles')"
+              class="cursor-pointer bg-army-700 border-2 border-army-900 py-8 flex flex-col items-center justify-center hover:bg-army-500 hover:-translate-y-1 transition-all shadow-hard group"
+            >
+              <h3
+                class="text-white font-black font-mono uppercase text-sm group-hover:text-gold-500"
+              >
+                Vehicles
+              </h3>
+            </div>
+
+            <div
+              onclick="showPage('training')"
+              class="cursor-pointer bg-slate-700 border-2 border-army-900 py-8 flex flex-col items-center justify-center hover:bg-slate-500 hover:-translate-y-1 transition-all shadow-hard group"
+            >
+              <h3
+                class="text-white font-black font-mono uppercase text-sm group-hover:text-gold-500"
+              >
+                Training
+              </h3>
+            </div>
+
+            <div
+              onclick="showPage('modifications')"
+              class="cursor-pointer bg-yellow-700 border-2 border-army-900 py-8 flex flex-col items-center justify-center hover:bg-yellow-600 hover:-translate-y-1 transition-all shadow-hard group"
+            >
+              <h3
+                class="text-white font-black font-mono uppercase text-sm group-hover:text-black"
+              >
+                Mods
+              </h3>
+            </div>
+
+            <div
+              onclick="showPage('drivers')"
+              class="cursor-pointer bg-gray-700 border-2 border-army-900 py-8 flex flex-col items-center justify-center hover:bg-gray-500 hover:-translate-y-1 transition-all shadow-hard group"
+            >
+              <h3
+                class="text-white font-black font-mono uppercase text-sm group-hover:text-gold-500"
+              >
+                Drivers
+              </h3>
+            </div>
+
+            <div
+              onclick="openModal('vehicle-modal')"
+              class="cursor-pointer bg-black border-2 border-army-900 py-8 flex flex-col items-center justify-center hover:bg-army-900 hover:-translate-y-1 transition-all shadow-hard group"
+            >
+              <h3
+                class="font-black font-mono uppercase text-sm text-gold-500 group-hover:text-white"
+              >
+                + Add Eqpt
+              </h3>
+            </div>
+          </div>
+
+          <h3
+            class="text-sm font-bold font-mono text-gray-600 uppercase tracking-widest mb-3 border-b-2 border-gray-400 pb-1"
+          >
+            Information & Alerts
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-white border-2 border-army-900 p-4">
+              <div
+                class="flex justify-between items-center mb-2 border-b border-gray-200 pb-2"
+              >
+                <h4 class="font-bold font-mono text-gray-800 uppercase">
+                  S.O.P.
+                </h4>
+                <button
+                  onclick="editCommandText('SOP', 'Standard Operating Procedures')"
+                  class="text-xs font-bold font-mono text-army-700 hover:underline"
+                >
+                  Edit
+                </button>
+              </div>
+              <div
+                id="sop-preview"
+                class="text-sm text-gray-600 font-mono h-20 overflow-hidden"
+              >
+                Loading...
+              </div>
+            </div>
+            <div class="bg-white border-2 border-blue-900 p-4">
+              <div
+                class="flex justify-between items-center mb-2 border-b border-gray-200 pb-2"
+              >
+                <h4 class="font-bold font-mono text-blue-900 uppercase">
+                  Gen. Instructions
+                </h4>
+                <button
+                  onclick="editCommandText('GENERAL_INSTRUCTIONS', 'General Instructions')"
+                  class="text-xs font-bold font-mono text-blue-700 hover:underline"
+                >
+                  Edit
+                </button>
+              </div>
+              <div
+                id="instructions-preview"
+                class="text-sm text-gray-600 font-mono h-20 overflow-hidden"
+              >
+                Loading...
+              </div>
+            </div>
+            <div
+              class="bg-white border-2 border-red-900 p-4 cursor-pointer hover:bg-red-50"
+              onclick="showPage('repairs')"
+            >
+              <div
+                class="flex justify-between items-center mb-2 border-b border-gray-200 pb-2"
+              >
+                <h4 class="font-bold font-mono text-red-800 uppercase">
+                  Repair Alerts
+                </h4>
+                <span
+                  id="stat-alert-count"
+                  class="text-xl font-black font-mono text-red-600"
+                  >0</span
+                >
+              </div>
+              <p class="text-sm font-mono text-gray-600">
+                Critical defects pending.
+              </p>
+            </div>
+          </div>
+        </div>

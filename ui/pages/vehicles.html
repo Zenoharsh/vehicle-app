@@ -1,0 +1,130 @@
+<div id="vehicles-page" class="page">
+          <div class="flex justify-between items-center mb-6">
+            <h2
+              class="text-3xl font-stencil text-army-900 tracking-wide uppercase"
+            >
+              Unit Vehicles
+            </h2>
+            <div class="flex gap-3">
+              <button
+                onclick="openModal('vehicle-modal')"
+                class="bg-army-700 text-white px-4 py-2 border-2 border-army-900 font-mono font-bold uppercase hover:bg-army-900"
+              >
+                + Add Vehicle
+              </button>
+              <button
+                onclick="showPage('home')"
+                class="bg-white text-gray-800 px-4 py-2 border-2 border-gray-400 font-mono font-bold uppercase hover:bg-gray-100"
+              >
+                Back
+              </button>
+            </div>
+          </div>
+
+          <div class="bg-white border-2 border-army-900 shadow-hard">
+            <table class="w-full text-left font-mono">
+              <thead class="bg-army-900 text-white text-xs uppercase">
+                <tr>
+                  <th class="px-6 py-4">S.No</th>
+                  <th class="px-6 py-4">BA Number</th>
+                  <th class="px-6 py-4">Type</th>
+                  <th class="px-6 py-4">Coy</th>
+                  <th class="px-6 py-4">Status</th>
+                  <th class="px-6 py-4 text-right">Remarks</th>
+                </tr>
+              </thead>
+              <tbody
+                id="vehicle-table-body"
+                class="divide-y-2 divide-gray-200 text-sm"
+              ></tbody>
+            </table>
+          </div>
+
+          <div
+            id="vehicle-detail"
+            class="hidden mt-8 bg-gray-50 border-2 border-army-900 shadow-hard p-6"
+          >
+            <div
+              class="flex justify-between items-center mb-6 border-b-4 border-army-700 pb-4"
+            >
+              <div>
+                <h3
+                  class="text-2xl font-bold font-mono uppercase text-army-900"
+                >
+                  Folio:
+                  <span
+                    id="vd-ba"
+                    class="text-gold-500 bg-army-900 px-2 py-1"
+                  ></span>
+                </h3>
+                <span
+                  id="vd-status-badge"
+                  class="mt-2 inline-block px-2 py-1 border-2 border-gray-400 text-xs font-bold font-mono uppercase"
+                  >Loading...</span
+                >
+              </div>
+              <button
+                onclick="closeVehicleDetail()"
+                class="font-mono text-sm font-bold text-army-700 hover:text-black"
+              >
+                ← CLOSE FOLIO
+              </button>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 font-mono">
+              <div class="bg-white p-3 border-2 border-gray-300">
+                <span class="block text-gray-500 text-xs uppercase font-bold"
+                  >Type</span
+                >
+                <span
+                  id="vd-type"
+                  class="font-bold text-lg text-gray-900"
+                ></span>
+              </div>
+              <div class="bg-white p-3 border-2 border-gray-300">
+                <span class="block text-gray-500 text-xs uppercase font-bold"
+                  >Coy</span
+                >
+                <span
+                  id="vd-coy"
+                  class="font-bold text-lg text-gray-900"
+                ></span>
+              </div>
+              <div class="bg-white p-3 border-2 border-gray-300 col-span-2">
+                <span class="block text-gray-500 text-xs uppercase font-bold"
+                  >Remarks</span
+                >
+                <span id="vd-remarks" class="text-gray-900"></span>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 font-mono">
+              <div class="border-2 border-red-900 bg-white">
+                <h4
+                  class="font-bold bg-red-900 text-white p-2 uppercase text-sm"
+                >
+                  Repair History
+                </h4>
+                <div
+                  id="vd-repairs-list"
+                  class="p-4 h-64 overflow-y-auto text-sm space-y-3"
+                ></div>
+              </div>
+              <div class="border-2 border-blue-900 bg-white">
+                <h4
+                  class="font-bold bg-blue-900 text-white p-2 uppercase text-sm"
+                >
+                  Modifications
+                </h4>
+                <div
+                  id="vd-mods-list"
+                  class="p-4 h-64 overflow-y-auto text-sm space-y-3"
+                ></div>
+              </div>
+            </div>
+            <div
+              id="cme-section"
+              class="mt-8 pt-6 border-t-2 border-gray-300 hidden font-mono"
+            ></div>
+          </div>
+        </div>
