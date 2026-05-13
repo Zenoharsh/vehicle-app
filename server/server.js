@@ -22,7 +22,6 @@ function startServer() {
   app.use("/api/command-text", commandText);
   app.use("/api/drivers", drivers);
   app.use("/api/modifications", modifications);
-  app.use("/api/training", training);
   app.use("/api/repairs", repairs);
   app.listen(SERVER_PORT, "0.0.0.0", () => {
     console.log(`API server running on ${SERVER_PORT}`);

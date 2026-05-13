@@ -92,6 +92,33 @@ router.get("/:id", async (req, res) => {
 });
 
 // ==========================================
+// 4. UPDATE VEHICLE CHECKS (CME)
+// ==========================================
+router.post("/:id/checks", async (req, res) => {
+  const db = getDB();
+  const vehicleId = req.params.id;
+  const { field_firing, pre_floatation, floatation, preventive, predictive, remarks } = req.body;
+
+  try {
+    await db.run(
+      `UPDATE vehicle_checks
+       SET field_firing=?, pre_floatation=?, floatation=?, preventive=?, predictive=?, remarks=?, last_updated=datetime('now')
+       WHERE vehicle_id=?`,
+      field_firing,
+      pre_floatation,
+      floatation,
+      preventive,
+      predictive,
+      remarks,
+      vehicleId
+    );
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ==========================================
 // 4. GET DISTINCT COY & TYPES (FOR FILTERS)
 // ==========================================
 router.get("/meta/distinct", async (_, res) => {
