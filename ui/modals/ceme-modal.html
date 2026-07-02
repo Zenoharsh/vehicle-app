@@ -1,0 +1,32 @@
+<div id="ceme-modal" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+  <div class="bg-white w-full max-w-lg border-4 border-army-900 shadow-[8px_8px_0px_0px_#1B2418]">
+    <div class="bg-army-900 text-white px-6 py-4 flex justify-between items-center">
+      <h3 class="font-stencil text-xl uppercase tracking-widest text-gold-500">Add CEME Log</h3>
+      <button onclick="closeModal('ceme-modal')" class="hover:text-gold-500 transition-colors">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+    </div>
+    <form id="ceme-form" class="p-6 flex flex-col gap-4">
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-bold font-mono text-gray-600 uppercase mb-1">BA No. *</label>
+          <select id="ceme-ba-no" required class="w-full p-2 border-2 border-army-900 font-bold bg-gray-50 focus:bg-white focus:outline-none">
+            <!-- Populated via JS -->
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-bold font-mono text-gray-600 uppercase mb-1">Date *</label>
+          <input type="date" id="ceme-date" required class="w-full p-2 border-2 border-army-900 font-bold bg-gray-50 focus:bg-white focus:outline-none" />
+        </div>
+      </div>
+      <div>
+        <label class="block text-xs font-bold font-mono text-gray-600 uppercase mb-1">Remarks *</label>
+        <textarea id="ceme-remarks" required rows="3" class="w-full p-2 border-2 border-army-900 font-bold bg-gray-50 focus:bg-white focus:outline-none" placeholder="Annual log remarks..."></textarea>
+      </div>
+      <div class="mt-4 flex justify-end gap-3">
+        <button type="button" onclick="closeModal('ceme-modal')" class="px-6 py-2 border-2 border-gray-400 font-bold font-mono uppercase hover:bg-gray-100 transition-colors">Cancel</button>
+        <button type="submit" class="bg-army-700 text-white px-8 py-2 border-2 border-army-900 font-bold font-mono uppercase hover:bg-army-900 transition-colors shadow-hard active:translate-y-1 active:shadow-none">Save Log</button>
+      </div>
+    </form>
+  </div>
+</div>

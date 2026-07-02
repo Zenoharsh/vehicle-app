@@ -1,0 +1,54 @@
+<div id="history-page" class="page">
+  <div class="h-full flex flex-col">
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-3xl font-stencil text-army-900 tracking-wide uppercase">
+        Daily Parade History
+      </h2>
+      <button
+        onclick="showPage('home')"
+        class="bg-white text-gray-800 px-4 py-2 border-2 border-gray-400 font-mono font-bold uppercase hover:bg-gray-100"
+      >
+        Back
+      </button>
+    </div>
+
+    <div class="flex flex-1 gap-6 overflow-hidden">
+      <!-- LEFT: Dates List -->
+      <div class="w-64 bg-white border-2 border-army-900 shadow-hard flex flex-col shrink-0">
+        <div class="bg-army-900 text-white p-4 font-mono font-bold uppercase tracking-widest text-sm border-b border-army-900">
+          Past Rolls
+        </div>
+        <div id="history-dates-list" class="flex-1 overflow-y-auto divide-y divide-gray-200">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+
+      <!-- RIGHT: Detailed Sheet -->
+      <div class="flex-1 bg-white border-2 border-army-900 shadow-hard flex flex-col overflow-hidden">
+        <div class="bg-army-800 text-white p-4 font-mono font-bold uppercase tracking-widest text-sm flex justify-between">
+          <span id="history-detail-title">Select a date</span>
+          <span id="history-detail-count" class="text-army-100 font-normal">-- records</span>
+        </div>
+        <div class="flex-1 overflow-auto bg-gray-50">
+          <table class="w-full text-left font-mono">
+            <thead class="bg-army-100 text-army-900 text-xs uppercase tracking-wider sticky top-0 shadow-sm z-10">
+              <tr id="history-detail-head">
+                <!-- Rendered via JS -->
+                <th class="px-6 py-3 w-16 border-b-2 border-army-200">S.No</th>
+                <th class="px-6 py-3 border-b-2 border-army-200">BA Number</th>
+                <th class="px-6 py-3 border-b-2 border-army-200">Coy</th>
+                <th class="px-6 py-3 border-b-2 border-army-200" id="history-dynamic-th-hook">Remarks / Faults</th>
+              </tr>
+            </thead>
+            <tbody id="history-detail-body" class="divide-y divide-gray-200 text-sm text-gray-800 bg-white">
+              <!-- Rendered via JS -->
+              <tr>
+                <td colspan="4" class="px-6 py-8 text-center text-gray-400 italic">Select a date from the left panel to view the maintenance roll.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -6,19 +6,80 @@ const { getDB } = require("../db");
 // 1. GET ALL VEHICLES
 // ==========================================
 router.get("/", async (_, res) => {
-  const db = getDB();
-  const rows = await db.all(`
-    SELECT
-      vehicle_id,
-      ba_no,
-      vehicle_type,
-      coy,
-      status,
-      general_remarks
-    FROM vehicles
-    ORDER BY coy, ba_no
-  `);
-  res.json(rows);
+  try {
+    const db = getDB();
+    const rows = await db.all(`
+      SELECT
+        vehicle_id,
+        ba_no,
+        vehicle_type,
+        coy,
+        status,
+        general_remarks
+      FROM vehicles
+      ORDER BY coy, ba_no
+    `);
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ==========================================
+// 4. GET DISTINCT COY & TYPES (FOR FILTERS)
+// ==========================================
+router.get("/meta/distinct", async (_, res) => {
+  try {
+    const db = getDB();
+    const coys = await db.all(`SELECT DISTINCT coy FROM vehicles ORDER BY coy`);
+    const types = await db.all(
+      `SELECT DISTINCT vehicle_type FROM vehicles ORDER BY vehicle_type`
+    );
+
+    res.json({
+      coys: coys.map((r) => r.coy),
+      vehicle_types: types.map((r) => r.vehicle_type),
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ==========================================
+// HISTORY: GET DISTINCT DATES
+// ==========================================
+router.get("/history/dates", async (_, res) => {
+  try {
+    const db = getDB();
+    const rows = await db.all(`
+      SELECT DISTINCT inspection_date 
+      FROM daily_inspections 
+      ORDER BY inspection_date DESC
+    `);
+    res.json(rows.map(r => r.inspection_date));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ==========================================
+// HISTORY: GET ROLL FOR DATE
+// ==========================================
+router.get("/history/:date", async (req, res) => {
+  try {
+    const db = getDB();
+    const date = req.params.date;
+    const rows = await db.all(`
+      SELECT d.*, v.ba_no, v.coy, v.vehicle_type 
+      FROM daily_inspections d
+      JOIN vehicles v ON d.vehicle_id = v.vehicle_id
+      WHERE d.inspection_date = ?
+      ORDER BY v.coy, v.ba_no
+    `, date);
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // ==========================================
@@ -118,21 +179,7 @@ router.post("/:id/checks", async (req, res) => {
   }
 });
 
-// ==========================================
-// 4. GET DISTINCT COY & TYPES (FOR FILTERS)
-// ==========================================
-router.get("/meta/distinct", async (_, res) => {
-  const db = getDB();
-  const coys = await db.all(`SELECT DISTINCT coy FROM vehicles ORDER BY coy`);
-  const types = await db.all(
-    `SELECT DISTINCT vehicle_type FROM vehicles ORDER BY vehicle_type`
-  );
-
-  res.json({
-    coys: coys.map((r) => r.coy),
-    vehicle_types: types.map((r) => r.vehicle_type),
-  });
-});
+// (Moved to top)
 
 // ==========================================
 // 5. BULK DAILY MAINTENANCE ROLL (PARADE)
@@ -152,8 +199,8 @@ router.post("/bulk-maintenance", async (req, res) => {
     // Prepare the statement. Note: We use date('now', 'localtime') to stamp today's date.
     const stmt = await db.prepare(`
       INSERT INTO daily_inspections
-      (vehicle_id, inspection_date, tires_checked, oil_checked, coolant_checked, monthly_check, remarks)
-      VALUES (?, date('now', 'localtime'), ?, ?, ?, ?, ?)
+      (vehicle_id, inspection_date, tires_checked, oil_checked, coolant_checked, monthly_check, remarks, custom_data)
+      VALUES (?, date('now', 'localtime'), ?, ?, ?, ?, ?, ?)
     `);
 
     for (const item of payload) {
@@ -161,8 +208,9 @@ router.post("/bulk-maintenance", async (req, res) => {
       const pass = item.daily ? 1 : 0;
       const monthly = item.monthly ? 1 : 0;
       const remarks = item.remarks || "";
+      const customDataJSON = item.custom_data ? JSON.stringify(item.custom_data) : '{}';
 
-      await stmt.run([item.vehicle_id, pass, pass, pass, monthly, remarks]);
+      await stmt.run([item.vehicle_id, pass, pass, pass, monthly, remarks, customDataJSON]);
     }
 
     await stmt.finalize();
@@ -177,6 +225,46 @@ router.post("/bulk-maintenance", async (req, res) => {
     // If anything fails, rollback the entire batch so we don't get partial data
     await db.run("ROLLBACK");
     console.error("Bulk Maintenance Error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ==========================================
+// 6. UPDATE VEHICLE
+// ==========================================
+router.put("/:id", async (req, res) => {
+  const db = getDB();
+  const id = req.params.id;
+  const { ba_no, vehicle_type, coy, status, general_remarks } = req.body;
+  try {
+    await db.run(
+      `UPDATE vehicles SET ba_no=?, vehicle_type=?, coy=?, status=?, general_remarks=?, updated_at=datetime('now') WHERE vehicle_id=?`,
+      ba_no, vehicle_type, coy, status, general_remarks, id
+    );
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ==========================================
+// 7. DELETE VEHICLE
+// ==========================================
+router.delete("/:id", async (req, res) => {
+  const db = getDB();
+  const id = req.params.id;
+  try {
+    // Also delete associated records
+    await db.run("BEGIN TRANSACTION");
+    await db.run("DELETE FROM repair_logs WHERE vehicle_id = ?", id);
+    await db.run("DELETE FROM modifications WHERE vehicle_id = ?", id);
+    await db.run("DELETE FROM daily_inspections WHERE vehicle_id = ?", id);
+    await db.run("DELETE FROM vehicle_checks WHERE vehicle_id = ?", id);
+    await db.run("DELETE FROM vehicles WHERE vehicle_id = ?", id);
+    await db.run("COMMIT");
+    res.json({ success: true });
+  } catch (err) {
+    await db.run("ROLLBACK");
     res.status(500).json({ error: err.message });
   }
 });

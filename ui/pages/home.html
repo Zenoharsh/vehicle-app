@@ -1,227 +1,101 @@
-<div id="home-page" class="page active">
-          <div
-            class="hero-section flex items-center gap-8 bg-army-700 p-8 border-2 border-army-900 shadow-hard mb-8 relative overflow-hidden"
-          >
-            <img
-              src="assets/vehicle.gif"
-              class="absolute right-0 bottom-0 h-full w-auto object-cover opacity-90 z-0 pointer-events-none"
-            />
+<div id="home-page" class="page active h-full">
+  <div class="flex flex-col lg:flex-row gap-8 h-full">
+    
+    <!-- Left/Center: Carousel -->
+    <div class="flex-1 relative h-[600px] lg:h-auto bg-white overflow-hidden rounded-[15px] shadow-[0_15px_40px_rgba(0,0,0,0.6)] border border-gray-700 group flex-shrink-0">
+      <!-- Images container -->
+      <div id="carousel-images" class="w-full h-full relative"></div>
+      
+      <!-- Controls -->
+      <button onclick="prevSlide()" class="absolute left-6 top-1/2 -translate-y-1/2 bg-black/40 backdrop-blur-md hover:bg-black/60 border border-white/10 text-white p-3 rounded-sm opacity-0 group-hover:opacity-100 transition-opacity z-20">
+         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+      </button>
+      <button onclick="nextSlide()" class="absolute right-6 top-1/2 -translate-y-1/2 bg-black/40 backdrop-blur-md hover:bg-black/60 border border-white/10 text-white p-3 rounded-sm opacity-0 group-hover:opacity-100 transition-opacity z-20">
+         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+      </button>
+      
+      <!-- Mercedes-Style Typography Overlay -->
+      <div class="absolute bottom-10 left-10 z-20 text-white drop-shadow-2xl">
+        <h1 class="text-4xl md:text-5xl font-serif font-black uppercase tracking-widest text-amber-400 drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)]">15<span class="lowercase text-[0.6em] align-top">th</span> BATTALION</h1>
+        <p class="text-base md:text-lg tracking-[0.25em] font-bold uppercase text-gray-900 mt-2 drop-shadow-md">Brigade of the Guards</p>
+      </div>
+    </div>
 
-            <div
-              class="h-24 w-24 bg-white flex items-center justify-center border-4 border-gold-500 shadow-xl z-10 shrink-0 relative"
-            >
-              <img
-                src="assets/logo.png"
-                onerror="this.style.display='none'; this.nextElementSibling.style.display='block'"
-                class="h-full w-full object-cover"
-              />
-              <span
-                style="display: none"
-                class="text-army-900 font-black text-3xl"
-                >15</span
-              >
-            </div>
-            <div class="z-10 relative">
-              <h1 class="text-4xl font-stencil text-gold-500 tracking-wider">
-                15th Battalion
-              </h1>
-              <p
-                class="text-lg font-bold tracking-[0.2em] uppercase text-gray-200"
-              >
-                Brigade of The Guards
-              </p>
-              <div
-                class="mt-4 flex gap-6 text-xs font-mono font-bold tracking-wide"
-              >
-                <span
-                  class="px-3 py-1 bg-black text-red-400 border border-red-500"
-                  >OFF ROAD: <b id="stat-off">--</b></span
-                >
-                <span
-                  class="px-3 py-1 bg-black text-yellow-400 border border-yellow-500"
-                  >REPAIRS: <b id="stat-repair">--</b></span
-                >
-              </div>
-            </div>
-          </div>
-          <div
-            onclick="showPage('maintenance')"
-            class="cursor-pointer bg-[#F5F5DC] border-2 border-army-700 border-l-[12px] py-4 px-6 mb-8 flex items-center justify-between hover:bg-[#EAEAD2] transition-all shadow-[4px_4px_0px_0px_#2E3B29] hover:translate-x-1 hover:translate-y-1 hover:shadow-none group"
-          >
-            <div class="flex items-center gap-5">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-10 w-10 text-army-900 group-hover:scale-110 transition-transform duration-200"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
-                />
-              </svg>
-              <div>
-                <h3
-                  class="text-army-900 font-black font-stencil uppercase text-2xl tracking-wide transition-colors"
-                >
-                  Daily Parade & Maint Roll
-                </h3>
-                <p
-                  class="text-army-700 font-mono text-xs uppercase tracking-widest mt-1 font-bold"
-                >
-                  Pending Action: Mandatory Fleet Inspection
-                </p>
-              </div>
-            </div>
+    <!-- Right Panel: Action Stack -->
+    <div class="w-full lg:w-80 flex flex-col gap-3 flex-shrink-0 pb-4">
+      
+      <!-- Primary Action -->
+      <div onclick="showPage('ceme')" class="cursor-pointer bg-yellow-500 text-black p-5 flex items-center justify-between hover:brightness-110 hover:-translate-y-1 transition-all duration-200 shadow-lg rounded-sm border-2 border-yellow-600 group">
+        <div class="flex flex-col">
+          <span class="text-xs font-bold text-yellow-900 uppercase tracking-widest mb-1">Quick Action</span>
+          <h3 class="font-bold text-xl uppercase tracking-wider">CEME Logs</h3>
+        </div>
+        <div class="p-3 bg-black/10 rounded-sm group-hover:bg-black/20 transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
+        </div>
+      </div>
+      
+      <!-- Module Cards -->
+      <div class="text-xs font-bold text-gray-400 uppercase tracking-widest mt-2 px-1">Command Modules</div>
 
-            <div class="flex items-center gap-3">
-              <span
-                class="text-army-900 font-mono font-bold text-lg group-hover:mr-2 transition-all"
-                >COMMENCE</span
-              >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-6 w-6 text-army-900"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M14 5l7 7m0 0l-7 7m7-7H3"
-                />
-              </svg>
-            </div>
-          </div>
-          <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-            <div
-              onclick="showPage('vehicles')"
-              class="cursor-pointer bg-army-700 border-2 border-army-900 py-8 flex flex-col items-center justify-center hover:bg-army-500 transition-all shadow-[4px_4px_0px_0px_#1B2418] hover:translate-x-1 hover:translate-y-1 hover:shadow-none group"
-            >
-              <h3
-                class="text-white font-black font-mono uppercase text-sm group-hover:text-gold-500"
-              >
-                Vehicles
-              </h3>
-            </div>
+      <div onclick="showPage('vehicles')" class="cursor-pointer bg-army-700 text-white p-4 flex items-center justify-between hover:brightness-110 hover:-translate-y-1 transition-all duration-200 shadow-md border-l-4 border-y border-r border-gray-600 rounded-sm">
+        <div class="flex items-center gap-3">
+          <svg class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+          <h3 class="font-bold uppercase tracking-wider text-sm">Vehicles</h3>
+        </div>
+        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+      </div>
 
-            <div
-              onclick="showPage('training')"
-              class="cursor-pointer bg-slate-700 border-2 border-army-900 py-8 flex flex-col items-center justify-center hover:bg-slate-500 transition-all shadow-[4px_4px_0px_0px_#1B2418] hover:translate-x-1 hover:translate-y-1 hover:shadow-none group"
-            >
-              <h3
-                class="text-white font-black font-mono uppercase text-sm group-hover:text-gold-500"
-              >
-                Training
-              </h3>
-            </div>
+      <div onclick="showPage('drivers')" class="cursor-pointer bg-slate-800 text-white p-4 flex items-center justify-between hover:brightness-110 hover:-translate-y-1 transition-all duration-200 shadow-md border-l-4 border-y border-r border-slate-600 rounded-sm">
+        <div class="flex items-center gap-3">
+          <svg class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+          <h3 class="font-bold uppercase tracking-wider text-sm">Drivers</h3>
+        </div>
+        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+      </div>
 
-            <div
-              onclick="showPage('modifications')"
-              class="cursor-pointer bg-yellow-700 border-2 border-army-900 py-8 flex flex-col items-center justify-center hover:bg-yellow-600 transition-all shadow-[4px_4px_0px_0px_#1B2418] hover:translate-x-1 hover:translate-y-1 hover:shadow-none group"
-            >
-              <h3
-                class="text-white font-black font-mono uppercase text-sm group-hover:text-black"
-              >
-                Mods
-              </h3>
-            </div>
+      <div onclick="showPage('modifications')" class="cursor-pointer bg-[#3a2f28] text-white p-4 flex items-center justify-between hover:brightness-110 hover:-translate-y-1 transition-all duration-200 shadow-md border-l-4 border-y border-r border-[#5a4f48] rounded-sm">
+        <div class="flex items-center gap-3">
+          <svg class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+          <h3 class="font-bold uppercase tracking-wider text-sm">Modifications</h3>
+        </div>
+        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+      </div>
 
-            <div
-              onclick="showPage('drivers')"
-              class="cursor-pointer bg-gray-700 border-2 border-army-900 py-8 flex flex-col items-center justify-center hover:bg-gray-500 transition-all shadow-[4px_4px_0px_0px_#1B2418] hover:translate-x-1 hover:translate-y-1 hover:shadow-none group"
-            >
-              <h3
-                class="text-white font-black font-mono uppercase text-sm group-hover:text-gold-500"
-              >
-                Drivers
-              </h3>
-            </div>
+      <div onclick="showPage('training')" class="cursor-pointer bg-[#2c3e50] text-white p-4 flex items-center justify-between hover:brightness-110 hover:-translate-y-1 transition-all duration-200 shadow-md border-l-4 border-y border-r border-[#4c5e70] rounded-sm">
+        <div class="flex items-center gap-3">
+          <svg class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+          <h3 class="font-bold uppercase tracking-wider text-sm">Training</h3>
+        </div>
+        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+      </div>
+      
+      <div onclick="showPage('launchers')" class="cursor-pointer bg-army-800 text-white p-4 flex items-center justify-between hover:brightness-110 hover:-translate-y-1 transition-all duration-200 shadow-md border-l-4 border-y border-r border-gray-600 rounded-sm">
+        <div class="flex items-center gap-3">
+          <svg class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+          <h3 class="font-bold uppercase tracking-wider text-sm">Launchers</h3>
+        </div>
+        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+      </div>
 
-            <div
-              onclick="openModal('vehicle-modal')"
-              class="cursor-pointer bg-black border-2 border-army-900 py-8 flex flex-col items-center justify-center hover:bg-army-900 transition-all shadow-[4px_4px_0px_0px_#1B2418] hover:translate-x-1 hover:translate-y-1 hover:shadow-none group"
-            >
-              <h3
-                class="font-black font-mono uppercase text-sm text-gold-500 group-hover:text-white"
-              >
-                + Add Eqpt
-              </h3>
-            </div>
-          </div>
+      <div onclick="showPage('ngen')" class="cursor-pointer bg-army-800 text-white p-4 flex items-center justify-between hover:brightness-110 hover:-translate-y-1 transition-all duration-200 shadow-md border-l-4 border-y border-r border-gray-600 rounded-sm">
+        <div class="flex items-center gap-3">
+          <svg class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+          <h3 class="font-bold uppercase tracking-wider text-sm">NGE Vehicles</h3>
+        </div>
+        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+      </div>
 
-          <h3
-            class="text-sm font-bold font-mono text-gray-600 uppercase tracking-widest mb-3 border-b-2 border-gray-400 pb-1"
-          >
-            Information & Alerts
-          </h3>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="bg-white border-2 border-army-900 p-4">
-              <div
-                class="flex justify-between items-center mb-2 border-b border-gray-200 pb-2"
-              >
-                <h4 class="font-bold font-mono text-gray-800 uppercase">
-                  S.O.P.
-                </h4>
-                <button
-                  onclick="editCommandText('SOP', 'Standard Operating Procedures')"
-                  class="text-xs font-bold font-mono text-army-700 hover:underline"
-                >
-                  Edit
-                </button>
-              </div>
-              <div
-                id="sop-preview"
-                class="text-sm text-gray-600 font-mono h-20 overflow-hidden"
-              >
-                Loading...
-              </div>
-            </div>
-            <div class="bg-white border-2 border-blue-900 p-4">
-              <div
-                class="flex justify-between items-center mb-2 border-b border-gray-200 pb-2"
-              >
-                <h4 class="font-bold font-mono text-blue-900 uppercase">
-                  Gen. Instructions
-                </h4>
-                <button
-                  onclick="editCommandText('GENERAL_INSTRUCTIONS', 'General Instructions')"
-                  class="text-xs font-bold font-mono text-blue-700 hover:underline"
-                >
-                  Edit
-                </button>
-              </div>
-              <div
-                id="instructions-preview"
-                class="text-sm text-gray-600 font-mono h-20 overflow-hidden"
-              >
-                Loading...
-              </div>
-            </div>
-            <div
-              class="bg-white border-2 border-red-900 p-4 cursor-pointer hover:bg-red-50"
-              onclick="showPage('repairs')"
-            >
-              <div
-                class="flex justify-between items-center mb-2 border-b border-gray-200 pb-2"
-              >
-                <h4 class="font-bold font-mono text-red-800 uppercase">
-                  Repair Alerts
-                </h4>
-                <span
-                  id="stat-alert-count"
-                  class="text-xl font-black font-mono text-red-600"
-                  >0</span
-                >
-              </div>
-              <p class="text-sm font-mono text-gray-600">
-                Critical defects pending.
-              </p>
-            </div>
+      <div onclick="showPage('maintenance')" class="cursor-pointer bg-gray-200 text-gray-900 p-4 flex items-center justify-between hover:brightness-110 hover:-translate-y-1 transition-all duration-200 shadow-md border-l-4 border-y border-r border-gray-400 rounded-sm mt-auto">
+        <div class="flex items-center gap-3">
+          <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+          <div class="flex flex-col">
+            <h3 class="font-bold uppercase tracking-wider text-sm">Daily Parade</h3>
+            <p class="text-xs text-gray-600 tracking-widest font-bold mt-1">& Maint Roll</p>
           </div>
         </div>
+        <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+      </div>
+    </div>
+  </div>
+</div>

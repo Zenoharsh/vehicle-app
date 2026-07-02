@@ -42,4 +42,34 @@ router.post("/", async (req, res) => {
   }
 });
 
+// Update existing modification
+router.put("/:id", async (req, res) => {
+  const db = getDB();
+  const id = req.params.id;
+  const { vehicle_id, modification, authority, date, remarks } = req.body;
+  try {
+    await db.run(
+      `UPDATE modifications SET vehicle_id=?, modification=?, authority=?, date=?, remarks=? WHERE mod_id=?`,
+      vehicle_id, modification, authority, date, remarks, id
+    );
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+// ==========================================
+// DELETE MODIFICATIONS
+// ==========================================
+router.delete('/:id', async (req, res) => {
+  const db = getDB();
+  try {
+    await db.run('DELETE FROM modifications WHERE mod_id = ?', req.params.id);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;

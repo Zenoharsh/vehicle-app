@@ -67,4 +67,34 @@ router.post("/:id/resolve", async (req, res) => {
   }
 });
 
+// Update a repair fully
+router.put("/:id", async (req, res) => {
+  const db = getDB();
+  const id = req.params.id;
+  const { vehicle_id, defect, reported_on, status, remarks } = req.body;
+  try {
+    await db.run(
+      `UPDATE repair_logs SET vehicle_id=?, defect=?, reported_on=?, status=?, remarks=? WHERE repair_id=?`,
+      vehicle_id, defect, reported_on, status, remarks, id
+    );
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+// ==========================================
+// DELETE REPAIR_LOGS
+// ==========================================
+router.delete('/:id', async (req, res) => {
+  const db = getDB();
+  try {
+    await db.run('DELETE FROM repair_logs WHERE repair_id = ?', req.params.id);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;

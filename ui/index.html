@@ -11,115 +11,157 @@
           extend: {
             colors: {
               army: {
-                900: "#1B2418" /* Gunmetal / Very Dark Green */,
-                700: "#2E3B29" /* Deep Olive */,
-                500: "#4A5D43" /* Standard Olive */,
-                100: "#E8F0E6" /* Light Tint */,
+                900: "#0F1410", /* Darker, almost black for premium feel */
+                800: "#1B2418",
+                700: "#2E3B29",
+                500: "#4A5D43",
+                100: "#E8F0E6",
               },
-              gold: { 500: "#FFD700" },
+              primary: {
+                DEFAULT: "#1B2418",
+                light: "#2E3B29",
+              }
             },
             fontFamily: {
-              sans: ["system-ui", "sans-serif"],
-              stencil: ["Impact", "sans-serif"],
-              mono: ["Courier New", "Courier", "monospace"],
-            },
-            boxShadow: {
-              hard: "4px 4px 0px 0px rgba(27,36,24,1)" /* Hard tactical shadow */,
+              sans: ["Inter", "system-ui", "sans-serif"],
+              mono: ["ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "monospace"],
+              serif: ["Cinzel", "Baskerville", "Georgia", "Cambria", "Times New Roman", "Times", "serif"],
             },
           },
         },
       };
     </script>
     <style>
-      /* Keep minimal custom CSS for page toggling */
-      .page {
-        display: none;
-      }
-      .page.active {
-        display: block;
-      }
-      .cmd-tile {
-        cursor: pointer;
-        padding: 1rem;
-        background: white;
-        border: 2px solid #1b2418;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.5rem;
-        transition: all 0.15s;
-      }
-      .cmd-tile:hover {
-        background: #e8f0e6;
-        transform: translateY(-2px);
-        box-shadow: 4px 4px 0px 0px rgba(27, 36, 24, 1);
-      }
-      .cmd-tile h3 {
-        font-family: "Courier New", monospace;
-        font-weight: bold;
-        text-transform: uppercase;
-        font-size: 0.875rem;
-      }
+      .page { display: none; }
+      .page.active { display: block; }
+      /* Transition for sidebar toggling */
+      #left-sidebar { transition: width 0.3s ease-in-out; }
+      .sidebar-text { transition: opacity 0.2s ease-in-out; }
+      .sidebar-collapsed .sidebar-text { opacity: 0; pointer-events: none; width: 0; display: none; }
+      .sidebar-collapsed .nav-button { justify-content: center; }
     </style>
   </head>
-  <body class="h-full flex flex-col font-sans bg-gradient-to-br from-white to-army-100 bg-fixed">
-    <nav
-      class="bg-gradient-to-r from-army-900 to-black text-white px-8 py-4 flex justify-between items-center border-b-4 border-gold-500 z-20 shadow-lg"
-    >
-      <div class="flex items-center gap-3">
-        <span
-          class="h-3 w-3 bg-green-500 animate-pulse border border-black"
-        ></span>
-        <div
-          class="text-xs font-mono text-gray-300 uppercase tracking-widest"
-          id="conn-status"
-        >
-          Initializing...
+  <body class="h-screen flex flex-col bg-gray-50 text-gray-800 font-sans overflow-hidden">
+    
+    <!-- TOP NAVBAR -->
+    <header class="h-32 bg-gradient-to-r from-red-800 to-red-950 border-b-4 border-yellow-500 flex items-center justify-between px-8 z-30 shrink-0 shadow-2xl text-white relative">
+      <div class="flex items-center gap-6">
+        
+        <!-- Menu Button -->
+        <button onclick="toggleSidebar()" class="p-2 hover:bg-white/10 rounded-lg transition-colors">
+          <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+
+        <!-- Logo Badge -->
+        <div class="rounded-full border-[3px] border-yellow-500 p-2 bg-transparent flex items-center justify-center shadow-[0_0_15px_rgba(234,179,8,0.3)] shrink-0">
+          <img src="assets/logo.png" alt="Logo" class="h-20 w-20 object-contain drop-shadow-xl" onerror="this.style.display='none'" />
+        </div>
+
+        <!-- Typography & Pills -->
+        <div class="flex flex-col justify-center pb-2">
+          <!-- Titles -->
+          <h1 class="text-4xl font-black text-yellow-500 tracking-tight drop-shadow-lg leading-none mb-1">15th Battalion</h1>
+          <h2 class="text-xs text-white uppercase tracking-[0.2em] font-bold">BRIGADE OF THE GUARDS</h2>
+        </div>
+
+      </div>
+
+      <!-- Right Controls -->
+      <div class="flex items-center gap-4">
+        <!-- Online indicator -->
+        <div class="flex items-center gap-2 px-4 py-2 bg-black/40 rounded-full border border-gray-700 shadow-inner">
+          <span class="h-3 w-3 bg-green-500 animate-pulse rounded-full shadow-[0_0_8px_rgba(34,197,94,0.8)]"></span>
+          <span class="text-xs font-bold text-gray-300 uppercase tracking-widest" id="conn-status">Online</span>
         </div>
       </div>
-      <div class="flex gap-8">
-        <button
-          onclick="showPage('home')"
-          class="text-sm font-bold font-mono uppercase tracking-widest hover:text-gold-500 transition-colors"
-        >
-          Command Home
-        </button>
-        <button
-          onclick="showPage('vehicles')"
-          class="text-sm font-bold font-mono uppercase tracking-widest text-gray-400 hover:text-white transition-colors"
-        >
-          Fleet Register
-        </button>
-        <button
-          onclick="showPage('settings')"
-          class="text-sm font-bold font-mono uppercase tracking-widest text-gray-400 hover:text-white transition-colors"
-        >
-          Settings
-        </button>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <div class="flex-1 flex flex-row overflow-hidden relative">
+      
+      <!-- LEFT SIDEBAR -->
+      <aside id="left-sidebar" class="w-20 sidebar-collapsed bg-army-900 border-r border-gray-800 flex flex-col py-6 shrink-0 z-20 shadow-2xl overflow-y-auto">
+        <nav class="flex-1 flex flex-col gap-2 px-3">
+          <button onclick="showPage('home')" class="nav-button flex items-center gap-4 w-full px-4 py-3 text-sm font-semibold text-gray-300 rounded-lg transition-colors hover:bg-white/10 hover:text-white">
+            <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+            <span class="sidebar-text tracking-widest uppercase">Dashboard</span>
+          </button>
+          
+          <div class="mt-6 mb-2 px-4">
+            <p class="sidebar-text text-xs font-bold text-gray-500 uppercase tracking-[0.2em]">Modules</p>
+          </div>
+
+          <button onclick="showPage('vehicles')" class="nav-button flex items-center gap-4 w-full px-4 py-3 text-sm font-semibold text-gray-300 rounded-lg transition-colors hover:bg-white/10 hover:text-white">
+            <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"></path></svg>
+            <span class="sidebar-text tracking-widest uppercase">Fleet Register</span>
+          </button>
+          
+          <button onclick="showPage('documents')" class="nav-button flex items-center gap-4 w-full px-4 py-3 text-sm font-semibold text-gray-300 rounded-lg transition-colors hover:bg-white/10 hover:text-white">
+            <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            <span class="sidebar-text tracking-widest uppercase">Documents</span>
+          </button>
+          
+          <button onclick="showPage('history')" class="nav-button flex items-center gap-4 w-full px-4 py-3 text-sm font-semibold text-gray-300 rounded-lg transition-colors hover:bg-white/10 hover:text-white">
+            <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span class="sidebar-text tracking-widest uppercase">History</span>
+          </button>
+
+          <button onclick="showPage('ceme')" class="nav-button flex items-center gap-4 w-full px-4 py-3 text-sm font-semibold text-gray-300 rounded-lg transition-colors hover:bg-white/10 hover:text-white">
+            <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243-4.243 3 3 0 004.243 4.243z"></path></svg>
+            <span class="sidebar-text tracking-widest uppercase">CEME</span>
+          </button>
+
+          <div class="mt-auto pt-6 border-t border-gray-800 px-4"></div>
+          
+          <button onclick="showPage('settings')" class="nav-button flex items-center gap-4 w-full px-4 py-3 text-sm font-semibold text-gray-300 rounded-lg transition-colors hover:bg-white/10 hover:text-white">
+            <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+            <span class="sidebar-text tracking-widest uppercase">Settings</span>
+          </button>
+          
+          <button onclick="window.close()" class="nav-button flex items-center gap-4 w-full px-4 py-3 text-sm font-semibold text-red-400 rounded-lg transition-colors hover:bg-red-500/10 hover:text-red-300">
+            <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+            <span class="sidebar-text tracking-widest uppercase">Exit</span>
+          </button>
+        </nav>
+      </aside>
+
+      <!-- CONTENT AREA -->
+      <main class="flex-1 overflow-y-auto p-8 bg-gray-100 relative shadow-inner">
+        <div class="mx-auto max-w-[1600px] h-full">
+          <div id="pages-container" class="h-full"></div>
+        </div>
+      </main>
+      <div id="modals-container"></div>
+      
+      <!-- Custom Prompt Modal -->
+      <div id="custom-prompt-modal" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-sm border-4 border-army-900 shadow-[8px_8px_0px_0px_#1B2418]">
+          <div class="bg-army-900 text-white px-6 py-4 flex justify-between items-center">
+            <h3 class="font-stencil text-xl uppercase tracking-widest text-gold-500" id="prompt-title">Enter Value</h3>
+            <button onclick="closePrompt()" class="hover:text-gold-500 transition-colors">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+          </div>
+          <div class="p-6 flex flex-col gap-4">
+            <input type="text" id="prompt-input" class="w-full p-2 border-2 border-army-900 font-bold bg-gray-50 focus:bg-white focus:outline-none" />
+            <div class="flex justify-end gap-3 mt-4">
+              <button onclick="closePrompt()" class="bg-gray-200 text-gray-800 px-4 py-2 border-2 border-gray-400 font-mono font-bold uppercase hover:bg-gray-300">Cancel</button>
+              <button onclick="submitPrompt()" class="bg-army-700 text-white px-6 py-2 border-2 border-army-900 font-mono font-bold uppercase hover:bg-army-900 shadow-hard active:translate-y-1 active:shadow-none">OK</button>
+            </div>
+          </div>
+        </div>
       </div>
-    </nav>
 
-    
-    <main class="flex-1 overflow-y-auto px-6 pb-8 pt-6">
-      <div class="mx-auto max-w-7xl">
-        <div id="pages-container"></div>
-      </div>
-    </main>
-    <div id="modals-container"></div>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
+    </div>
 
     <script src="js/dashboard.js"></script>
+    <script>
+      function toggleSidebar() {
+        const sidebar = document.getElementById('left-sidebar');
+        sidebar.classList.toggle('w-64');
+        sidebar.classList.toggle('w-20');
+        sidebar.classList.toggle('sidebar-collapsed');
+      }
+    </script>
   </body>
 </html>

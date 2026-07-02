@@ -4,28 +4,6 @@ body {
   color: #1f2937;
 }
 
-/* --- HERO SECTION (RED + GIF) --- */
-.hero-section {
-  background: linear-gradient(135deg, #5b0f14 0%, #7f1d1d 40%, #b91c1c 100%);
-  color: white;
-  padding: 3.5rem 2.5rem;
-  border-bottom: 5px solid #ffd700;
-  margin-bottom: 2.5rem;
-  border-radius: 0 0 8px 8px; /* Kept your slight rounding here */
-  position: relative;
-  overflow: hidden;
-}
-
-.hero-gif {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  height: 100%;
-  width: auto;
-  object-fit: cover;
-  opacity: 0.9;
-  z-index: 0;
-}
 
 /* --- PAGE TOGGLING --- */
 .page {

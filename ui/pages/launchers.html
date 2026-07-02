@@ -1,0 +1,30 @@
+<div id="launchers-page" class="page">
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-3xl font-stencil text-army-900 tracking-wide uppercase">Launchers</h2>
+    <div class="flex gap-3">
+      <button onclick="openModal('launcher-modal')" class="bg-army-700 text-white px-6 py-2 border-2 border-army-900 font-mono font-bold uppercase hover:bg-army-900 transition-colors shadow-hard active:translate-y-1 active:shadow-none">
+        + Add Launcher
+      </button>
+      <button onclick="showPage('home')" class="bg-white text-gray-800 px-4 py-2 border-2 border-gray-400 font-mono font-bold uppercase hover:bg-gray-100">
+        Back
+      </button>
+    </div>
+  </div>
+
+  <div class="bg-white border-2 border-army-900 shadow-hard overflow-auto max-h-[80vh]">
+    <table class="w-full text-left font-mono">
+      <thead class="bg-army-900 text-white text-xs uppercase tracking-wider sticky top-0">
+        <tr>
+          <th class="px-6 py-4 w-16">S.No</th>
+          <th class="px-6 py-4">Name</th>
+          <th class="px-6 py-4">Coy</th>
+          <th class="px-6 py-4">Status</th>
+          <th class="px-6 py-4">Remarks</th>
+          <th class="px-6 py-4 text-right">Action</th>
+        </tr>
+      </thead>
+      <tbody id="launcher-table-body" class="divide-y-2 divide-gray-300 text-sm font-bold text-gray-800">
+      </tbody>
+    </table>
+  </div>
+</div>

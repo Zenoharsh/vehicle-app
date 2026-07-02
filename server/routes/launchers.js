@@ -2,28 +2,19 @@ const express = require("express");
 const router = express.Router();
 const { getDB } = require("../db");
 
-// Get all training records
 router.get("/", async (req, res) => {
   const db = getDB();
-  const rows = await db.all(
-    `SELECT * FROM training ORDER BY conducted_on DESC`
-  );
+  const rows = await db.all("SELECT * FROM launchers");
   res.json(rows);
 });
 
-// Add new training record
 router.post("/", async (req, res) => {
   const db = getDB();
-  const { title, category, conducted_on, remarks } = req.body;
-
+  const { name, coy, status, remarks } = req.body;
   try {
     await db.run(
-      `INSERT INTO training (title, category, conducted_on, remarks)
-       VALUES (?, ?, ?, ?)`,
-      title,
-      category,
-      conducted_on,
-      remarks
+      `INSERT INTO launchers (name, coy, status, remarks) VALUES (?, ?, ?, ?)`,
+      name, coy, status || 'ACTIVE', remarks
     );
     res.json({ success: true });
   } catch (err) {
@@ -31,15 +22,14 @@ router.post("/", async (req, res) => {
   }
 });
 
-// Update existing training record
 router.put("/:id", async (req, res) => {
   const db = getDB();
   const id = req.params.id;
-  const { title, category, conducted_on, remarks } = req.body;
+  const { name, coy, status, remarks } = req.body;
   try {
     await db.run(
-      `UPDATE training SET title=?, category=?, conducted_on=?, remarks=? WHERE training_id=?`,
-      title, category, conducted_on, remarks, id
+      `UPDATE launchers SET name=?, coy=?, status=?, remarks=? WHERE id=?`,
+      name, coy, status, remarks, id
     );
     res.json({ success: true });
   } catch (err) {
@@ -49,12 +39,12 @@ router.put("/:id", async (req, res) => {
 
 
 // ==========================================
-// DELETE TRAINING
+// DELETE LAUNCHERS
 // ==========================================
 router.delete('/:id', async (req, res) => {
   const db = getDB();
   try {
-    await db.run('DELETE FROM training WHERE training_id = ?', req.params.id);
+    await db.run('DELETE FROM launchers WHERE id = ?', req.params.id);
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });

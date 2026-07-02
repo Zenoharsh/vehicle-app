@@ -18,6 +18,20 @@ ipcMain.handle("load-html", async (event, filename) => {
   }
 });
 
+ipcMain.handle("save-config", async (event, config) => {
+  try {
+    saveConfig(config);
+    return true;
+  } catch (err) {
+    console.error("Failed to save config:", err);
+    return false;
+  }
+});
+
+ipcMain.handle("log-error", async (event, msg) => {
+  fs.appendFileSync('scratch/ui_log.txt', msg + '\n');
+});
+
 // ================================
 // Server & DB Imports
 // ================================

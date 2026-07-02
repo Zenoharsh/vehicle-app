@@ -8,21 +8,23 @@
   "scripts": {
     "start": "electron .",
     "rebuild": "electron-rebuild -f -w sqlite3",
-    "dist": "npm run rebuild && electron-builder"
+    "dist": "electron-builder"
   },
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.21.2",
+    "multer": "^2.1.1",
     "sqlite": "^5.1.1",
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^6.0.1"
   },
   "devDependencies": {
     "@electron/rebuild": "^3.7.2",
-    "electron": "^33.2.1",
+    "electron": "^28.2.0",
     "electron-builder": "^24.13.3",
     "electron-rebuild": "^3.2.9"
   },
   "build": {
+    "npmRebuild": false,
     "appId": "com.15bn.command",
     "productName": "15th Bn Command",
     "directories": {
@@ -33,7 +35,12 @@
       "preload.js",
       "server/**/*",
       "ui/**/*",
+      "node_modules/**/*",
+      "node_modules/sqlite3/build/Release/node_sqlite3.node",
       "package.json"
+    ],
+    "asarUnpack": [
+      "**/*.node"
     ],
     "win": {
       "target": "nsis",

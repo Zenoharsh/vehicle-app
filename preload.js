@@ -20,4 +20,6 @@ contextBridge.exposeInMainWorld("electronAPI", {
     }
   },
   loadHTML: (filename) => ipcRenderer.invoke("load-html", filename),
+  saveConfig: (config) => ipcRenderer.invoke("save-config", config),
+  logError: (msg) => ipcRenderer.invoke("log-error", msg),
 });

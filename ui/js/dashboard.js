@@ -11,6 +11,17 @@ let API_URL = "";
 let currentAppConfig = null;
 let currentCommandKey = null;
 
+function escapeHtml(unsafe) {
+    if (!unsafe) return '';
+    return unsafe
+         .toString()
+         .replace(/&/g, "&amp;")
+         .replace(/</g, "&lt;")
+         .replace(/>/g, "&gt;")
+         .replace(/"/g, "&quot;")
+         .replace(/'/g, "&#039;");
+}
+
 // ===============================
 // 2. ELECTRON BRIDGE / INIT
 // ===============================
@@ -32,8 +43,8 @@ window.electronAPI.on("APP_CONFIG", async (config) => {
 });
 
 async function loadAllHTMLComponents() {
-  const pages = ['home', 'settings', 'vehicles', 'drivers', 'modifications', 'training', 'maintenance', 'repairs'];
-  const modals = ['vehicle-modal', 'command-text-modal', 'driver-modal', 'mod-modal', 'training-modal', 'repair-modal'];
+  const pages = ['home', 'settings', 'vehicles', 'drivers', 'modifications', 'training', 'maintenance', 'repairs', 'documents', 'launchers', 'ngen', 'history', 'ceme'];
+  const modals = ['vehicle-modal', 'command-text-modal', 'driver-modal', 'mod-modal', 'training-modal', 'repair-modal', 'document-modal', 'launcher-modal', 'ngen-modal', 'ceme-modal'];
   const pC = document.getElementById('pages-container');
   const mC = document.getElementById('modals-container');
   if (!pC || !mC) return;
@@ -56,7 +67,12 @@ function initForms() {
   initDriverForm();
   initModForm();
   initTrainingForm();
+  initCarousel();
   initRepairForm();
+  initDocumentForm();
+  initLauncherForm();
+  initNGenForm();
+  initCemeForm();
 }
 
 
@@ -97,6 +113,11 @@ function showPage(id) {
     loadVehicleDropdown();
   }
   if (id === "training") loadTraining();
+  if (id === "documents") loadDocuments();
+  if (id === "launchers") loadLaunchers();
+  if (id === "ngen") loadNGen();
+  if (id === "ceme") loadCeme();
+  if (id === "history") loadHistory();
   if (id === "repairs") {
     loadRepairs();
     loadRepairDropdown();
@@ -444,30 +465,56 @@ async function saveVehicleChecks(vehicleId) {
 // 8. MAINTENANCE ROLL MODULE
 // ===============================
 async function loadMaintenanceRoll() {
+  const dateStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+  const dateEl = document.getElementById('todays-roll-date');
+  if (dateEl) dateEl.innerText = `Today's Roll: ${dateStr}`;
+
   const vehicles = await api("/api/vehicles");
+  const dynCols = await api("/api/dynamic_columns/maintenance") || [];
+  
+  const thead = document.getElementById("maint-table-head");
+  if (thead) {
+    let theadHtml = `
+      <th class="px-6 py-4 w-16">S.No</th>
+      <th class="px-6 py-4">BA Number</th>
+      <th class="px-6 py-4">Coy</th>
+    `;
+    dynCols.forEach(col => {
+      const safeLabel = escapeHtml(col.column_label);
+      theadHtml += `<th class="px-6 py-4 text-center custom-col-th relative group select-none" data-col="${safeLabel}">
+        ${safeLabel} <button onclick="deleteColumn(${col.id}, '${safeLabel}')" class="absolute top-2 right-2 text-red-400 opacity-0 group-hover:opacity-100 hover:text-red-200 transition-opacity">✖</button>
+      </th>`;
+    });
+    theadHtml += `<th class="px-6 py-4" id="maint-remarks-th">Remarks / Faults</th>`;
+    thead.innerHTML = theadHtml;
+  }
+
   const tbody = document.getElementById("maint-table-body");
   if (!tbody || !vehicles) return;
   tbody.innerHTML = "";
 
   vehicles.forEach((v, index) => {
-    tbody.innerHTML += `
-      <tr class="hover:bg-army-100 transition-colors vehicle-row" data-id="${
-        v.vehicle_id
-      }">
+    let rowHtml = `
+      <tr class="hover:bg-army-100 transition-colors vehicle-row" data-id="${v.vehicle_id}">
         <td class="px-6 py-4 text-gray-500 font-mono">${index + 1}</td>
         <td class="px-6 py-4 font-black text-army-900 text-lg">${v.ba_no}</td>
         <td class="px-6 py-4 text-gray-600">${v.coy}</td>
-        <td class="px-6 py-4 text-center border-l-2 border-gray-300 bg-gray-50">
-          <input type="checkbox" class="daily-check w-6 h-6 border-2 border-army-900 accent-army-700 cursor-pointer" />
-        </td>
-        <td class="px-6 py-4 text-center bg-gray-50">
-          <input type="checkbox" class="monthly-check w-6 h-6 border-2 border-army-900 accent-army-700 cursor-pointer" />
-        </td>
+    `;
+    
+    dynCols.forEach(col => {
+      const safeLabel = escapeHtml(col.column_label);
+      rowHtml += `<td class="px-6 py-4 text-center bg-gray-50 custom-col-td" data-col="${safeLabel}">
+        <input type="checkbox" data-col="${safeLabel}" class="custom-check w-6 h-6 border-2 border-army-900 accent-army-700 cursor-pointer" />
+      </td>`;
+    });
+    
+    rowHtml += `
         <td class="px-6 py-2">
           <input type="text" class="maint-remarks w-full p-2 border-2 border-gray-300 focus:border-army-900 outline-none font-mono text-xs bg-white" placeholder="Clear..." />
         </td>
       </tr>
     `;
+    tbody.innerHTML += rowHtml;
   });
 }
 
@@ -477,12 +524,20 @@ async function saveBulkMaintenance() {
 
   rows.forEach((row) => {
     const id = row.getAttribute("data-id");
-    const daily = row.querySelector(".daily-check").checked;
-    const monthly = row.querySelector(".monthly-check").checked;
     const remarks = row.querySelector(".maint-remarks").value.trim();
 
-    if (daily || monthly || remarks) {
-      payload.push({ vehicle_id: id, daily, monthly, remarks });
+    const customChecks = row.querySelectorAll(".custom-check");
+    const custom_data = {};
+    let hasCustom = false;
+    customChecks.forEach((chk) => {
+      if (chk.checked) {
+        custom_data[chk.getAttribute("data-col")] = true;
+        hasCustom = true;
+      }
+    });
+
+    if (remarks || hasCustom) {
+      payload.push({ vehicle_id: id, daily: false, monthly: false, remarks, custom_data });
     }
   });
 
@@ -499,22 +554,79 @@ async function saveBulkMaintenance() {
     });
 
     if (res && res.success) {
-      alert(`✅ Roll Committed! Processed ${res.processed} vehicles.`);
+      alert("✅ Roll Committed Successfully!");
 
       // Clear all checkboxes and remarks after successful save
       rows.forEach((row) => {
-        row.querySelector(".daily-check").checked = false;
-        row.querySelector(".monthly-check").checked = false;
         row.querySelector(".maint-remarks").value = "";
+        row.querySelectorAll(".custom-check").forEach(c => c.checked = false);
       });
     } else {
       alert("❌ Error committing roll: " + (res?.error || "Unknown error"));
     }
   } catch (err) {
-    console.error("Bulk Save Error:", err);
-    alert("❌ Network Error while committing roll.");
+    console.error("Bulk Maint Error:", err);
+    alert("❌ Error committing roll");
   }
 }
+
+let currentPromptCallback = null;
+
+window.closePrompt = function() {
+  document.getElementById("custom-prompt-modal").classList.add("hidden");
+  document.getElementById("custom-prompt-modal").classList.remove("flex");
+  currentPromptCallback = null;
+};
+
+window.submitPrompt = function() {
+  const input = document.getElementById("prompt-input").value.trim();
+  if (!input) {
+    alert("Please enter a valid column name.");
+    return;
+  }
+  const cb = currentPromptCallback;
+  closePrompt();
+  if (cb) cb(input);
+};
+
+window.promptNewColumn = function() {
+  document.getElementById("prompt-title").innerText = "Enter new column name (e.g. Oil Check)";
+  document.getElementById("prompt-input").value = "";
+  
+  const modal = document.getElementById("custom-prompt-modal");
+  modal.classList.remove("hidden");
+  modal.classList.add("flex");
+  
+  document.getElementById("prompt-input").focus();
+
+  currentPromptCallback = async (colName) => {
+    if (!colName) return;
+
+    const res = await api("/api/dynamic_columns", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ module_name: "maintenance", column_label: colName })
+    });
+    
+    if (res && res.success) {
+      loadMaintenanceRoll();
+    } else {
+      alert("❌ Error adding column");
+    }
+  };
+};
+
+window.deleteColumn = async function(id, colName) {
+  if (!confirm(`Delete column "${colName}"?`)) return;
+  
+  const res = await api(`/api/dynamic_columns/${id}`, { method: 'DELETE' });
+  if (res && res.success) {
+    loadMaintenanceRoll();
+  } else {
+    alert("❌ Error deleting column");
+  }
+};
+
 // ===============================
 // 9. DRIVERS MODULE
 // ===============================
@@ -838,3 +950,394 @@ async function resolveRepair(id) {
     alert("Error resolving repair");
   }
 }
+
+// ===============================
+// HISTORY MODULE
+// ===============================
+async function loadHistory() {
+  const dates = await api('/api/vehicles/history/dates');
+  const list = document.getElementById('history-dates-list');
+  if (!list) return;
+  list.innerHTML = '';
+  if (!dates || dates.length === 0) {
+    list.innerHTML = `<div class="p-4 text-gray-500 italic text-sm">No past rolls found.</div>`;
+    return;
+  }
+  dates.forEach(date => {
+    list.innerHTML += `<button onclick="viewHistoryDetail('${date}')" class="w-full text-left p-4 hover:bg-gray-50 border-b border-gray-100 font-mono font-bold text-gray-700 transition-colors">${date}</button>`;
+  });
+}
+
+async function viewHistoryDetail(date) {
+  document.getElementById('history-detail-title').innerText = 'Roll for ' + date;
+  const records = await api(`/api/vehicles/history/${date}`);
+  const tbody = document.getElementById('history-detail-body');
+  document.getElementById('history-detail-count').innerText = (records ? records.length : 0) + ' records';
+  
+  if (!records || records.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="10" class="p-8 text-center text-gray-500 italic">No data for this date.</td></tr>`;
+    return;
+  }
+
+  // Generate dynamic header based on the first record's custom_data keys
+  const firstCustom = records[0].custom_data ? JSON.parse(records[0].custom_data) : {};
+  const keys = Object.keys(firstCustom);
+  
+  const thead = document.getElementById('history-detail-head');
+  if (thead) {
+    let headHTML = `
+      <th class="px-6 py-3 w-16 border-b-2 border-army-200">S.No</th>
+      <th class="px-6 py-3 border-b-2 border-army-200">BA Number</th>
+      <th class="px-6 py-3 border-b-2 border-army-200">Coy</th>
+    `;
+    keys.forEach(k => {
+      headHTML += `<th class="px-6 py-3 border-b-2 border-army-200 text-center">${escapeHtml(k)}</th>`;
+    });
+    headHTML += `<th class="px-6 py-3 border-b-2 border-army-200">Remarks</th>`;
+    thead.innerHTML = headHTML;
+  }
+
+  if (tbody) {
+    tbody.innerHTML = '';
+    records.forEach((r, i) => {
+      let cData = {};
+      try { cData = JSON.parse(r.custom_data); } catch(e){}
+      
+      let checksHTML = '';
+      keys.forEach(k => {
+        const pass = cData[k] === true;
+        checksHTML += `<td class="px-6 py-3 text-center border-l border-gray-100">
+          ${pass ? '<span class="text-green-600 font-bold">[ ✓ ]</span>' : '<span class="text-red-400 font-mono">[   ]</span>'}
+        </td>`;
+      });
+
+      tbody.innerHTML += `
+        <tr class="hover:bg-gray-50 transition-colors">
+          <td class="px-6 py-3 text-gray-500 font-mono">${i + 1}</td>
+          <td class="px-6 py-3 font-bold text-army-900">${escapeHtml(r.ba_no)}</td>
+          <td class="px-6 py-3 text-gray-600">${escapeHtml(r.coy)}</td>
+          ${checksHTML}
+          <td class="px-6 py-3 text-sm text-gray-700">${escapeHtml(r.remarks || '-')}</td>
+        </tr>
+      `;
+    });
+  }
+}
+
+async function loadDocuments() {
+  const docs = await api("/api/documents");
+  const tbody = document.getElementById("document-table-body");
+  if (!tbody) return;
+  tbody.innerHTML = "";
+
+  if (!docs || docs.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-gray-500">No documents found.</td></tr>`;
+    return;
+  }
+
+  docs.forEach((d, i) => {
+    tbody.innerHTML += `
+      <tr class="hover:bg-gray-50">
+        <td class="px-6 py-4 text-gray-500 font-mono">${i + 1}</td>
+        <td class="px-6 py-4 font-bold text-army-900">${escapeHtml(d.doc_type)}</td>
+        <td class="px-6 py-4">${escapeHtml(d.date)}</td>
+        <td class="px-6 py-4">${escapeHtml(d.equipment_name || "—")}</td>
+        <td class="px-6 py-4">${escapeHtml(d.remarks || "—")}</td>
+        <td class="px-6 py-4 text-right">
+          <a href="${API_URL}/api/documents/download/${d.id}" target="_blank" class="text-army-700 hover:text-army-900 font-bold underline text-sm">Download</a>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+function initDocumentForm() {
+  const dForm = document.getElementById("document-form");
+  if (dForm) {
+    dForm.onsubmit = async (e) => {
+      e.preventDefault();
+      const fileInput = document.getElementById("doc-file");
+      if (!fileInput.files || !fileInput.files[0]) return alert("Please select a file.");
+
+      const formData = new FormData();
+      formData.append("doc_type", document.getElementById("doc-type").value);
+      formData.append("date", document.getElementById("doc-date").value);
+      formData.append("equipment_name", document.getElementById("doc-equipment").value);
+      formData.append("remarks", document.getElementById("doc-remarks").value);
+      formData.append("file", fileInput.files[0]);
+
+      try {
+        const res = await fetch(API_URL + "/api/documents", {
+          method: "POST",
+          body: formData
+        });
+        const data = await res.json();
+        if (data && data.success) {
+          alert("✅ Document uploaded!");
+          closeModal("document-modal");
+          loadDocuments();
+          e.target.reset();
+        } else {
+          alert("❌ Error: " + (data.error || "Unknown"));
+        }
+      } catch (err) {
+        alert("❌ Error uploading document.");
+      }
+    };
+  }
+}
+
+async function loadLaunchers() {
+  const launchers = await api("/api/launchers");
+  const tbody = document.getElementById("launcher-table-body");
+  if (!tbody) return;
+  tbody.innerHTML = "";
+
+  if (!launchers || launchers.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-gray-500">No launchers found.</td></tr>`;
+    return;
+  }
+
+  launchers.forEach((l, i) => {
+    tbody.innerHTML += `
+      <tr class="hover:bg-gray-50">
+        <td class="px-6 py-4 text-gray-500 font-mono">${i + 1}</td>
+        <td class="px-6 py-4 font-bold text-army-900">${escapeHtml(l.type)}</td>
+        <td class="px-6 py-4">${escapeHtml(l.quantity)}</td>
+        <td class="px-6 py-4">${escapeHtml(l.status)}</td>
+        <td class="px-6 py-4">${escapeHtml(l.remarks || "—")}</td>
+        <td class="px-6 py-4 text-right">
+          <button onclick="deleteLauncher(${l.id})" class="text-red-600 hover:text-red-800 font-bold text-sm">Delete</button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+function initLauncherForm() {
+  const form = document.getElementById("launcher-form");
+  if (form) {
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      const data = {
+        name: document.getElementById("l-name").value,
+        coy: document.getElementById("l-coy").value,
+        status: document.getElementById("l-status").value,
+        remarks: document.getElementById("l-remarks").value,
+      };
+      const res = await api("/api/launchers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (res && res.success) {
+        alert("✅ Launcher added!");
+        closeModal("launcher-modal");
+        loadLaunchers();
+        e.target.reset();
+      } else {
+        alert("❌ Error adding launcher");
+      }
+    };
+  }
+}
+
+async function deleteLauncher(id) {
+  if (!confirm("Delete this launcher?")) return;
+  const res = await api('/api/launchers/' + id, { method: 'DELETE' });
+  if (res && res.success) {
+    loadLaunchers();
+  } else {
+    alert("❌ Error deleting");
+  }
+}
+
+async function loadNGen() {
+  const ngen = await api("/api/ngen");
+  const tbody = document.getElementById("ngen-table-body");
+  if (!tbody) return;
+  tbody.innerHTML = "";
+
+  if (!ngen || ngen.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-gray-500">No NGE vehicles found.</td></tr>`;
+    return;
+  }
+
+  ngen.forEach((n, i) => {
+    tbody.innerHTML += `
+      <tr class="hover:bg-gray-50">
+        <td class="px-6 py-4 text-gray-500 font-mono">${i + 1}</td>
+        <td class="px-6 py-4 font-bold text-army-900">${escapeHtml(n.ba_no)}</td>
+        <td class="px-6 py-4">${escapeHtml(n.type)}</td>
+        <td class="px-6 py-4">${escapeHtml(n.status)}</td>
+        <td class="px-6 py-4">${escapeHtml(n.remarks || "—")}</td>
+        <td class="px-6 py-4 text-right">
+          <button onclick="deleteNGen(${n.id})" class="text-red-600 hover:text-red-800 font-bold text-sm">Delete</button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+function initNGenForm() {
+  const form = document.getElementById("ngen-form");
+  if (form) {
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      const data = {
+        equipment: document.getElementById("n-equipment").value,
+        release_date: document.getElementById("n-date").value,
+        oem: document.getElementById("n-oem").value,
+        remarks: document.getElementById("n-remarks").value,
+      };
+      const res = await api("/api/ngen", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (res && res.success) {
+        alert("✅ NGE vehicle added!");
+        closeModal("ngen-modal");
+        loadNGen();
+        e.target.reset();
+      } else {
+        alert("❌ Error adding NGE");
+      }
+    };
+  }
+}
+
+async function deleteNGen(id) {
+  if (!confirm("Delete this NGE vehicle?")) return;
+  const res = await api('/api/ngen/' + id, { method: 'DELETE' });
+  if (res && res.success) {
+    loadNGen();
+  } else {
+    alert("❌ Error deleting");
+  }
+}
+
+// ===============================
+// 21. CEME LOGS MODULE
+// ===============================
+async function loadCeme() {
+  const logs = await api("/api/ceme");
+  const tbody = document.getElementById("ceme-table-body");
+  if (!tbody) return;
+  tbody.innerHTML = "";
+
+  if (!logs || logs.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-gray-500">No CEME logs found.</td></tr>`;
+    return;
+  }
+
+  logs.forEach((log, i) => {
+    tbody.innerHTML += `
+      <tr class="hover:bg-gray-50">
+        <td class="px-6 py-4 text-gray-500 font-mono">${i + 1}</td>
+        <td class="px-6 py-4 font-bold text-army-900">${escapeHtml(log.ba_no)}</td>
+        <td class="px-6 py-4 font-mono font-bold">${escapeHtml(log.coy)}</td>
+        <td class="px-6 py-4 font-mono">${escapeHtml(log.vehicle_type)}</td>
+        <td class="px-6 py-4">${escapeHtml(log.date)}</td>
+        <td class="px-6 py-4 text-gray-800">${escapeHtml(log.remarks) || "—"}</td>
+        <td class="px-6 py-4 text-right">
+          <button onclick="alert('Delete functionality coming soon!')" class="text-red-600 hover:text-red-800 font-bold text-sm">Delete</button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+async function populateCemeDropdown() {
+  const select = document.getElementById("ceme-ba-no");
+  if (!select) return;
+  
+  const vehicles = await api("/api/vehicles");
+  select.innerHTML = '<option value="" disabled selected>Select BA No...</option>';
+  
+  if (vehicles && vehicles.length > 0) {
+    vehicles.forEach(v => {
+      select.innerHTML += `<option value="${v.vehicle_id}">${escapeHtml(v.ba_no)} (${escapeHtml(v.coy)} - ${escapeHtml(v.vehicle_type)})</option>`;
+    });
+  }
+}
+
+window.openCemeModal = async function() {
+  await populateCemeDropdown();
+  openModal('ceme-modal');
+}
+
+function initCemeForm() {
+  const form = document.getElementById("ceme-form");
+  if (form) {
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      const data = {
+        vehicle_id: document.getElementById("ceme-ba-no").value,
+        date: document.getElementById("ceme-date").value,
+        remarks: document.getElementById("ceme-remarks").value,
+      };
+      
+      if (!data.vehicle_id) {
+        return alert("Please select a valid BA No.");
+      }
+
+      const res = await api("/api/ceme", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      if (res && res.success) {
+        alert("✅ CEME Log added!");
+        closeModal("ceme-modal");
+        loadCeme();
+        e.target.reset();
+      } else {
+        alert("❌ Error adding CEME Log");
+      }
+    };
+  }
+}
+
+let currentSlide = 0;
+const heroImages = [];
+for (let i = 1; i <= 13; i++) {
+  heroImages.push(`assets/hero-${i}.jpeg`);
+}
+let carouselTimer = null;
+
+function initCarousel() {
+  const container = document.getElementById('carousel-images');
+  if (!container) return;
+  
+  container.innerHTML = '';
+  heroImages.forEach((src, i) => {
+    container.innerHTML += `
+      <img src="${src}" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${i === 0 ? 'opacity-100' : 'opacity-0'}" id="slide-${i}">
+    `;
+  });
+  
+  if (carouselTimer) clearInterval(carouselTimer);
+  carouselTimer = setInterval(() => { window.nextSlide() }, 5000);
+}
+
+window.nextSlide = function() {
+  const oldSlide = document.getElementById(`slide-${currentSlide}`);
+  if (oldSlide) oldSlide.classList.replace('opacity-100', 'opacity-0');
+  
+  currentSlide = (currentSlide + 1) % heroImages.length;
+  
+  const newSlide = document.getElementById(`slide-${currentSlide}`);
+  if (newSlide) newSlide.classList.replace('opacity-0', 'opacity-100');
+};
+
+window.prevSlide = function() {
+  const oldSlide = document.getElementById(`slide-${currentSlide}`);
+  if (oldSlide) oldSlide.classList.replace('opacity-100', 'opacity-0');
+  
+  currentSlide = (currentSlide - 1 + heroImages.length) % heroImages.length;
+  
+  const newSlide = document.getElementById(`slide-${currentSlide}`);
+  if (newSlide) newSlide.classList.replace('opacity-0', 'opacity-100');
+};

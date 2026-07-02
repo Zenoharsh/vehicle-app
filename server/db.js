@@ -33,6 +33,7 @@ async function initDB() {
       predictive INTEGER DEFAULT 0,
       remarks TEXT,
       last_updated TEXT,
+      custom_data TEXT DEFAULT '{}',
       FOREIGN KEY(vehicle_id) REFERENCES vehicles(vehicle_id)
     );
 
@@ -67,12 +68,21 @@ async function initDB() {
     CREATE TABLE IF NOT EXISTS repair_logs (
       repair_id INTEGER PRIMARY KEY AUTOINCREMENT,
       vehicle_id INTEGER NOT NULL,
-      defect TEXT,
-      reported_on TEXT,
-      status TEXT CHECK(status IN ('PENDING','IN_PROGRESS','RECTIFIED')),
+      description TEXT NOT NULL,
+      status TEXT CHECK(status IN ('PENDING', 'RESOLVED')) DEFAULT 'PENDING',
+      reported_date TEXT,
+      resolved_date TEXT,
+      FOREIGN KEY(vehicle_id) REFERENCES vehicles(vehicle_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS ceme_logs (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      vehicle_id INTEGER NOT NULL,
+      date TEXT NOT NULL,
       remarks TEXT,
       FOREIGN KEY(vehicle_id) REFERENCES vehicles(vehicle_id)
     );
+
     CREATE TABLE IF NOT EXISTS daily_inspections (
       inspection_id INTEGER PRIMARY KEY AUTOINCREMENT,
       vehicle_id INTEGER NOT NULL,
@@ -82,6 +92,7 @@ async function initDB() {
       coolant_checked INTEGER DEFAULT 0,
       monthly_check INTEGER DEFAULT 0,
       remarks TEXT,
+      custom_data TEXT DEFAULT '{}',
       FOREIGN KEY(vehicle_id) REFERENCES vehicles(vehicle_id)
     );
     /* This table is required for SOP/Instructions Modals */
@@ -90,7 +101,47 @@ async function initDB() {
       content TEXT,
       updated_at TEXT
     );
+
+    CREATE TABLE IF NOT EXISTS launchers (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      coy TEXT,
+      status TEXT DEFAULT 'ACTIVE',
+      remarks TEXT
+    );
+
+    CREATE TABLE IF NOT EXISTS ngen_vehicles (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      release_date TEXT,
+      equipment TEXT NOT NULL,
+      oem_details TEXT,
+      remarks TEXT
+    );
+
+    CREATE TABLE IF NOT EXISTS documents (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      doc_type TEXT CHECK(doc_type IN ('Demands', 'Depositions', 'Collections', 'Conditioning', 'Repair')),
+      date TEXT,
+      equipment_name TEXT,
+      remarks TEXT,
+      file_path TEXT NOT NULL,
+      file_name TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS dynamic_columns (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      module_name TEXT NOT NULL,
+      column_label TEXT NOT NULL
+    );
   `);
+
+  // Migrations for existing DB
+  try {
+    await db.exec(`ALTER TABLE vehicle_checks ADD COLUMN custom_data TEXT DEFAULT '{}'`);
+  } catch (e) {}
+  try {
+    await db.exec(`ALTER TABLE daily_inspections ADD COLUMN custom_data TEXT DEFAULT '{}'`);
+  } catch (e) {}
 
   // Initialize default Command Texts so modals aren't empty
   await db.run(

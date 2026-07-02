@@ -48,4 +48,34 @@ router.post("/", async (req, res) => {
   }
 });
 
+// 3. Update Existing Driver
+router.put("/:id", async (req, res) => {
+  const db = getDB();
+  const id = req.params.id;
+  const { army_no, name, coy, vehicle_type, license_issued, remarks } = req.body;
+  try {
+    await db.run(
+      `UPDATE drivers SET army_no=?, name=?, coy=?, vehicle_type=?, license_issued=?, remarks=? WHERE driver_id=?`,
+      army_no, name, coy, vehicle_type, license_issued, remarks, id
+    );
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+// ==========================================
+// DELETE DRIVERS
+// ==========================================
+router.delete('/:id', async (req, res) => {
+  const db = getDB();
+  try {
+    await db.run('DELETE FROM drivers WHERE driver_id = ?', req.params.id);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;
