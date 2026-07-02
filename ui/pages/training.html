@@ -7,7 +7,7 @@
             </h2>
             <div class="flex gap-3">
               <button
-                onclick="openModal('training-modal')"
+                onclick="openAddTrainingModal()"
                 class="bg-army-700 text-white px-4 py-2 border-2 border-army-900 font-mono font-bold uppercase hover:bg-army-900"
               >
                 + Add Event
@@ -25,10 +25,11 @@
               <thead class="bg-army-900 text-white text-xs uppercase">
                 <tr>
                   <th class="px-6 py-4">S.No</th>
-                  <th class="px-6 py-4">Event</th>
+                  <th class="px-6 py-4">Title</th>
                   <th class="px-6 py-4">Category</th>
-                  <th class="px-6 py-4">Date</th>
+                  <th class="px-6 py-4">Conducted On</th>
                   <th class="px-6 py-4">Remarks</th>
+                  <th class="px-6 py-4 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody

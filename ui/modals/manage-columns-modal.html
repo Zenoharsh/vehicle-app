@@ -1,0 +1,36 @@
+<div
+  id="manage-columns-modal"
+  class="fixed inset-0 bg-black/70 hidden items-center justify-center z-50"
+>
+  <div class="bg-gray-50 w-full max-w-md border-4 border-army-900 shadow-[8px_8px_0px_0px_#1B2418]">
+    <div class="bg-army-900 text-white px-6 py-4 flex justify-between items-center">
+      <h3 class="font-stencil text-xl uppercase tracking-widest text-gold-500">Manage Columns</h3>
+      <button onclick="closeModal('manage-columns-modal')" class="hover:text-gold-500 transition-colors">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+    </div>
+    
+    <div class="p-6">
+      <div class="mb-6 flex gap-2">
+        <input 
+          type="text" 
+          id="manage-columns-input" 
+          placeholder="New column(s), comma-separated..."
+          class="flex-1 p-2 border-2 border-gray-400 focus:border-army-900 font-bold bg-white focus:outline-none" 
+          onkeydown="if(event.key === 'Enter') addColumnsFromModal()"
+        />
+        <button 
+          onclick="addColumnsFromModal()"
+          class="bg-army-700 text-white px-4 py-2 border-2 border-army-900 font-mono font-bold uppercase hover:bg-army-900 shadow-hard active:translate-y-1 active:shadow-none"
+        >
+          Add
+        </button>
+      </div>
+
+      <h4 class="font-mono font-bold text-gray-500 mb-2 border-b-2 border-gray-300 pb-1">Active Columns</h4>
+      <ul id="manage-columns-list" class="max-h-60 overflow-y-auto space-y-2 font-mono text-sm pr-2">
+        <!-- Columns loaded here via JS -->
+      </ul>
+    </div>
+  </div>
+</div>

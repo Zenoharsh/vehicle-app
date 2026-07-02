@@ -34,6 +34,21 @@ router.post("/", async (req, res) => {
   }
 });
 
+// PUT to update CEME log
+router.put("/:id", async (req, res) => {
+  const db = getDB();
+  const { vehicle_id, date, remarks } = req.body;
+  try {
+    await db.run(
+      `UPDATE ceme_logs SET vehicle_id = ?, date = ?, remarks = ? WHERE id = ?`,
+      vehicle_id, date, remarks, req.params.id
+    );
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // DELETE a CEME log
 router.delete("/:id", async (req, res) => {
   const db = getDB();

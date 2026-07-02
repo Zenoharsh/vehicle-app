@@ -7,7 +7,7 @@
             </h2>
             <div class="flex gap-3">
               <button
-                onclick="openModal('vehicle-modal')"
+                onclick="openAddVehicleModal()"
                 class="bg-army-700 text-white px-4 py-2 border-2 border-army-900 font-mono font-bold uppercase hover:bg-army-900"
               >
                 + Add Vehicle
@@ -30,7 +30,8 @@
                   <th class="px-6 py-4">Type</th>
                   <th class="px-6 py-4">Coy</th>
                   <th class="px-6 py-4">Status</th>
-                  <th class="px-6 py-4 text-right">Remarks</th>
+                  <th class="px-6 py-4">Remarks</th>
+                  <th class="px-6 py-4 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody
@@ -122,9 +123,5 @@
                 ></div>
               </div>
             </div>
-            <div
-              id="cme-section"
-              class="mt-8 pt-6 border-t-2 border-gray-300 hidden font-mono"
-            ></div>
           </div>
         </div>

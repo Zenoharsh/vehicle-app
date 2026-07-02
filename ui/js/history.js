@@ -69,4 +69,4 @@ async function viewHistoryDetail(date) {
       `;
     });
   }
-}
+}

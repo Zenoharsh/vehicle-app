@@ -1,0 +1,115 @@
+7: // ===============================
+9: // ===============================
+10: let API_URL = "";
+11: let currentAppConfig = null;
+12: let currentCommandKey = null;
+14: function escapeHtml(unsafe) {
+25: // ===============================
+27: // ===============================
+28: window.electronAPI.on("APP_CONFIG", async (config) => {
+45: async function loadAllHTMLComponents() {
+65: function initForms() {
+79: // ===============================
+81: // ===============================
+82: async function api(endpoint, opts) {
+92: // ===============================
+94: // ===============================
+95: function showPage(id) {
+127: function openModal(id) {
+135: function closeModal(id) {
+143: // ===============================
+145: // ===============================
+146: async function loadDashboard() {
+166: async function loadSOP() {
+177: async function loadInstructions() {
+188: async function editCommandText(key, title) {
+196: async function saveCommandText() {
+208: // ===============================
+210: // ===============================
+211: function initSettingsPage() {
+225: function toggleIPField() {
+241: function saveSettings() {
+259: // ===============================
+261: // ===============================
+262: async function loadVehicles() {
+299: let editingVehicleId = null;
+301: window.openAddVehicleModal = function() {
+310: window.editVehicle = function(e, id, ba_no, type, coy, remarks) {
+322: async function deleteVehicle(e, id, ba_no) {
+333: function initVehicleForm() {
+369: async function openVehicleDetail(vehicleId) {
+440: function closeVehicleDetail() {
+447: function renderVehicleChecks(data) {
+475: function renderCheck(id, label, value) {
+486: async function saveVehicleChecks(vehicleId) {
+504: // ===============================
+506: // ===============================
+507: async function loadMaintenanceRoll() {
+561: async function saveBulkMaintenance() {
+613: let currentPromptCallback = null;
+615: window.closePrompt = function() {
+621: window.submitPrompt = function() {
+632: window.promptNewColumn = function() {
+659: window.deleteColumn = async function(id, colName) {
+670: // ===============================
+672: // ===============================
+673: async function loadDrivers() {
+712: async function loadVehicleMeta() {
+739: let editingDriverId = null;
+741: window.openAddDriverModal = function() {
+750: window.editDriver = function(e, id, army_no, name, coy, type, license, remarks) {
+764: async function deleteDriver(e, id, name) {
+775: function initDriverForm() {
+807: // ===============================
+809: // ===============================
+810: async function loadModifications() {
+839: async function loadVehicleDropdown() {
+849: let editingModId = null;
+851: window.openAddModModal = function() {
+860: window.editMod = function(e, id, vehicle_id, modification, authority, date, remarks) {
+873: async function deleteMod(e, id, name) {
+884: function initModForm() {
+915: // ===============================
+917: // ===============================
+918: async function loadTraining() {
+948: let editingTrainingId = null;
+950: window.openAddTrainingModal = function() {
+959: window.editTraining = function(e, id, title, cat, date, remarks) {
+971: async function deleteTraining(e, id, title) {
+982: function initTrainingForm() {
+1012: // ===============================
+1014: // ===============================
+1015: async function loadRepairs() {
+1064: async function loadRepairDropdown() {
+1074: window.openAddRepairModal = function() {
+1080: function initRepairForm() {
+1109: async function resolveRepair(id) {
+1123: // ===============================
+1125: // ===============================
+1126: async function loadHistory() {
+1140: async function viewHistoryDetail(date) {
+1196: async function loadDocuments() {
+1223: function initDocumentForm() {
+1259: async function loadLaunchers() {
+1287: let editingLauncherId = null;
+1289: window.openAddLauncherModal = function() {
+1298: window.editLauncher = function(e, id, name, coy, status, remarks) {
+1310: async function deleteLauncher(e, id, name) {
+1321: function initLauncherForm() {
+1351: async function loadNGen() {
+1379: let editingNGenId = null;
+1381: window.openAddNGenModal = function() {
+1390: window.editNGen = function(e, id, eq, date, oem, remarks) {
+1402: async function deleteNGen(e, id, eq) {
+1413: function initNGenForm() {
+1443: // ===============================
+1445: // ===============================
+1446: async function loadCeme() {
+1474: async function populateCemeDropdown() {
+1488: window.openCemeModal = async function() {
+1493: function initCemeForm() {
+1526: let currentSlide = 0;
+1531: let carouselTimer = null;
+1533: function initCarousel() {
+1548: window.nextSlide = function() {
+1558: window.prevSlide = function() {

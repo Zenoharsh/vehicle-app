@@ -1,3 +1,4 @@
+
 let currentSlide = 0;
 const heroImages = [];
 for (let i = 1; i <= 13; i++) {
@@ -12,7 +13,7 @@ function initCarousel() {
   container.innerHTML = '';
   heroImages.forEach((src, i) => {
     container.innerHTML += `
-      <img src="${src}" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${i === 0 ? 'opacity-100' : 'opacity-0'}" id="slide-${i}">
+      <img src="${src}" class="absolute inset-0 w-full h-full object-contain bg-white transition-opacity duration-1000 ${i === 0 ? 'opacity-100' : 'opacity-0'}" id="slide-${i}">
     `;
   });
   

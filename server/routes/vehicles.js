@@ -238,7 +238,7 @@ router.put("/:id", async (req, res) => {
   const { ba_no, vehicle_type, coy, status, general_remarks } = req.body;
   try {
     await db.run(
-      `UPDATE vehicles SET ba_no=?, vehicle_type=?, coy=?, status=?, general_remarks=?, updated_at=datetime('now') WHERE vehicle_id=?`,
+      `UPDATE vehicles SET ba_no=?, vehicle_type=?, coy=?, status=COALESCE(?, status), general_remarks=?, updated_at=datetime('now') WHERE vehicle_id=?`,
       ba_no, vehicle_type, coy, status, general_remarks, id
     );
     res.json({ success: true });
