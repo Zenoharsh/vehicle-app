@@ -94,12 +94,12 @@ window.editDriver = function(e, id, army_no, name, coy, type, license, remarks) 
 
 async function deleteDriver(e, id, name) {
   if (e) e.stopPropagation();
-  if (!confirm(`Delete driver ${name}?`)) return;
+  if (!(await showConfirm())) return;
   const res = await api('/api/drivers/' + id, { method: 'DELETE' });
   if (res && res.success) {
     loadDrivers();
   } else {
-    alert("❌ Error deleting");
+    showToast("❌ Error deleting");
   }
 }
 
@@ -124,12 +124,12 @@ if (dForm) {
       body: JSON.stringify(data),
     });
     if (res && res.success) {
-      alert(editingDriverId ? "✅ Driver updated!" : "✅ Driver added!");
+      showToast(editingDriverId ? "✅ Driver updated!" : "✅ Driver added!");
       closeModal("driver-modal");
       loadDrivers();
       e.target.reset();
     } else {
-      alert("❌ Error saving driver");
+      showToast("❌ Error saving driver");
     }
   };
 } 

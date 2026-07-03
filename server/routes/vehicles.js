@@ -13,6 +13,7 @@ router.get("/", async (_, res) => {
         vehicle_id,
         ba_no,
         vehicle_type,
+        class,
         coy,
         status,
         general_remarks
@@ -87,14 +88,15 @@ router.get("/history/:date", async (req, res) => {
 // ==========================================
 router.post("/", async (req, res) => {
   const db = getDB();
-  const { ba_no, vehicle_type, coy, general_remarks } = req.body;
+  const { ba_no, vehicle_type, coy, class: v_class, general_remarks } = req.body;
 
   const result = await db.run(
     `INSERT INTO vehicles
-     (ba_no, vehicle_type, coy, general_remarks, created_at)
-     VALUES (?,?,?,?,datetime('now'))`,
+     (ba_no, vehicle_type, class, coy, general_remarks, created_at)
+     VALUES (?,?,?,?,?,datetime('now'))`,
     ba_no,
     vehicle_type,
+    v_class,
     coy,
     general_remarks
   );
@@ -235,11 +237,11 @@ router.post("/bulk-maintenance", async (req, res) => {
 router.put("/:id", async (req, res) => {
   const db = getDB();
   const id = req.params.id;
-  const { ba_no, vehicle_type, coy, status, general_remarks } = req.body;
+  const { ba_no, vehicle_type, coy, class: v_class, status, general_remarks } = req.body;
   try {
     await db.run(
-      `UPDATE vehicles SET ba_no=?, vehicle_type=?, coy=?, status=COALESCE(?, status), general_remarks=?, updated_at=datetime('now') WHERE vehicle_id=?`,
-      ba_no, vehicle_type, coy, status, general_remarks, id
+      `UPDATE vehicles SET ba_no=?, vehicle_type=?, class=?, coy=?, status=COALESCE(?, status), general_remarks=?, updated_at=datetime('now') WHERE vehicle_id=?`,
+      ba_no, vehicle_type, v_class, coy, status, general_remarks, id
     );
     res.json({ success: true });
   } catch (err) {

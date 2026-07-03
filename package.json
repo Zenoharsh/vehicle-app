@@ -1,6 +1,6 @@
 {
   "name": "15bn-command-app",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Vehicle Maintenance Command Dashboard",
   "main": "main.js",
   "author": "15th Bn Command",

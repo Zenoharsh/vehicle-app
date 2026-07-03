@@ -22,6 +22,67 @@ function escapeHtml(unsafe) {
          .replace(/'/g, "&#039;");
 }
 
+window.showToast = function(message, type = "success") {
+  const container = document.getElementById("toast-container");
+  if (!container) return;
+  const toast = document.createElement("div");
+  const bgColor = type === "success" ? "bg-army-700" : type === "error" ? "bg-red-600" : "bg-gray-800";
+  toast.className = `px-4 py-3 text-white font-mono font-bold text-sm shadow-hard border-2 border-army-900 ${bgColor} transform transition-all duration-300 translate-y-full opacity-0`;
+  toast.innerText = message;
+  container.appendChild(toast);
+  
+  // Animate in
+  setTimeout(() => {
+    toast.classList.remove("translate-y-full", "opacity-0");
+  }, 10);
+  
+  // Remove after 3s
+  setTimeout(() => {
+    toast.classList.add("translate-y-full", "opacity-0");
+    setTimeout(() => {
+      if (container.contains(toast)) container.removeChild(toast);
+    }, 300);
+  }, 3000);
+}
+
+window.showConfirm = function(message) {
+  return new Promise((resolve) => {
+    const overlay = document.createElement("div");
+    overlay.className = "fixed inset-0 bg-black/70 flex items-center justify-center z-[9999]";
+    
+    const modal = document.createElement("div");
+    modal.className = "bg-gray-50 w-full max-w-sm border-4 border-army-900 shadow-hard p-6 font-mono transform scale-95 opacity-0 transition-all duration-200";
+    
+    modal.innerHTML = `
+      <h3 class="text-lg font-bold text-army-900 mb-4 uppercase border-b-2 border-gray-400 pb-2">Confirm Action</h3>
+      <p class="text-gray-800 mb-6">${escapeHtml(message)}</p>
+      <div class="flex justify-end gap-3 pt-4 border-t-2 border-gray-300">
+        <button id="confirm-cancel" class="px-4 py-2 border-2 border-gray-400 uppercase font-bold hover:bg-gray-200 transition-colors">Cancel</button>
+        <button id="confirm-ok" class="px-4 py-2 bg-red-600 text-white border-2 border-red-800 uppercase font-bold hover:bg-red-800 transition-colors">Confirm</button>
+      </div>
+    `;
+    
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+    
+    // Animate in
+    requestAnimationFrame(() => {
+      modal.classList.remove("scale-95", "opacity-0");
+    });
+    
+    const cleanup = (result) => {
+      modal.classList.add("scale-95", "opacity-0");
+      setTimeout(() => {
+        if (document.body.contains(overlay)) document.body.removeChild(overlay);
+        resolve(result);
+      }, 200);
+    };
+    
+    overlay.querySelector("#confirm-cancel").onclick = () => cleanup(false);
+    overlay.querySelector("#confirm-ok").onclick = () => cleanup(true);
+  });
+}
+
 // ===============================
 // 2. ELECTRON BRIDGE / INIT
 // ===============================

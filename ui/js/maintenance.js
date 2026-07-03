@@ -14,6 +14,7 @@ async function loadMaintenanceRoll() {
     let theadHtml = `
       <th class="px-6 py-4 w-16">S.No</th>
       <th class="px-6 py-4">BA Number</th>
+      <th class="px-6 py-4">Class</th>
       <th class="px-6 py-4">Coy</th>
     `;
     dynCols.forEach(col => {
@@ -35,6 +36,7 @@ async function loadMaintenanceRoll() {
       <tr class="hover:bg-army-100 transition-colors vehicle-row" data-id="${v.vehicle_id}">
         <td class="px-6 py-4 text-gray-500 font-mono">${index + 1}</td>
         <td class="px-6 py-4 font-black text-army-900 text-lg">${v.ba_no}</td>
+        <td class="px-6 py-4 text-gray-600 font-bold">${v.class || "—"}</td>
         <td class="px-6 py-4 text-gray-600">${v.coy}</td>
     `;
     
@@ -79,7 +81,7 @@ async function saveBulkMaintenance() {
   });
 
   if (payload.length === 0) {
-    alert("⚠️ No checks marked. Roll not committed.");
+    showToast("⚠️ No checks marked. Roll not committed.");
     return;
   }
 
@@ -91,7 +93,7 @@ async function saveBulkMaintenance() {
     });
 
     if (res && res.success) {
-      alert("✅ Roll Committed Successfully!");
+      showToast("✅ Roll Committed Successfully!");
 
       // Clear all checkboxes and remarks after successful save
       rows.forEach((row) => {
@@ -99,11 +101,11 @@ async function saveBulkMaintenance() {
         row.querySelectorAll(".custom-check").forEach(c => c.checked = false);
       });
     } else {
-      alert("❌ Error committing roll: " + (res?.error || "Unknown error"));
+      showToast("❌ Error committing roll: " + (res?.error || "Unknown error"));
     }
   } catch (err) {
     console.error("Bulk Maint Error:", err);
-    alert("❌ Error committing roll");
+    showToast("❌ Error committing roll");
   }
 }
 
@@ -118,7 +120,7 @@ window.closePrompt = function() {
 window.submitPrompt = function() {
   const input = document.getElementById("prompt-input").value.trim();
   if (!input) {
-    alert("Please enter a valid column name.");
+    showToast("Please enter a valid column name.");
     return;
   }
   const cb = currentPromptCallback;
@@ -175,7 +177,7 @@ window.addColumnsFromModal = async function() {
   }
   
   if (hasError) {
-    alert("❌ Error adding one or more columns");
+    showToast("❌ Error adding one or more columns");
   } else {
     document.getElementById("manage-columns-input").value = "";
   }
@@ -185,7 +187,7 @@ window.addColumnsFromModal = async function() {
 };
 
 window.deleteColumn = async function(id, colName) {
-  if (!confirm(`Delete column "${colName}"?`)) return;
+  if (!(await showConfirm())) return;
   
   const res = await api(`/api/dynamic_columns/${id}`, { method: 'DELETE' });
   if (res && res.success) {
@@ -194,7 +196,7 @@ window.deleteColumn = async function(id, colName) {
       renderManageColumnsList();
     }
   } else {
-    alert("❌ Error deleting column");
+    showToast("❌ Error deleting column");
   }
 };
 

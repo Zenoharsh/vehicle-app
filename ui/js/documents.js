@@ -32,7 +32,7 @@ function initDocumentForm() {
     dForm.onsubmit = async (e) => {
       e.preventDefault();
       const fileInput = document.getElementById("doc-file");
-      if (!fileInput.files || !fileInput.files[0]) return alert("Please select a file.");
+      if (!fileInput.files || !fileInput.files[0]) return showToast("Please select a file.");
 
       const formData = new FormData();
       formData.append("doc_type", document.getElementById("doc-type").value);
@@ -48,15 +48,15 @@ function initDocumentForm() {
         });
         const data = await res.json();
         if (data && data.success) {
-          alert("✅ Document uploaded!");
+          showToast("✅ Document uploaded!");
           closeModal("document-modal");
           loadDocuments();
           e.target.reset();
         } else {
-          alert("❌ Error: " + (data.error || "Unknown"));
+          showToast("❌ Error: " + (data.error || "Unknown"));
         }
       } catch (err) {
-        alert("❌ Error uploading document.");
+        showToast("❌ Error uploading document.");
       }
     };
   }

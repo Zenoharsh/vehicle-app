@@ -56,12 +56,12 @@ window.editTraining = function(e, id, title, cat, date, remarks) {
 
 async function deleteTraining(e, id, title) {
   if (e) e.stopPropagation();
-  if (!confirm(`Delete training event ${title}?`)) return;
+  if (!(await showConfirm())) return;
   const res = await api('/api/training/' + id, { method: 'DELETE' });
   if (res && res.success) {
     loadTraining();
   } else {
-    alert("❌ Error deleting");
+    showToast("❌ Error deleting");
   }
 }
 
@@ -84,12 +84,12 @@ function initTrainingForm() {
         body: JSON.stringify(data),
       });
       if (res && res.success) {
-        alert(editingTrainingId ? "✅ Training event updated!" : "✅ Training event recorded!");
+        showToast(editingTrainingId ? "✅ Training event updated!" : "✅ Training event recorded!");
         closeModal("training-modal");
         loadTraining();
         e.target.reset();
       } else {
-        alert("❌ Error recording training");
+        showToast("❌ Error recording training");
       }
     };
   } 

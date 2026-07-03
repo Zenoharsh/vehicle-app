@@ -16,6 +16,7 @@ async function initDB() {
       vehicle_id INTEGER PRIMARY KEY AUTOINCREMENT,
       ba_no TEXT UNIQUE NOT NULL,
       vehicle_type TEXT CHECK(vehicle_type IN ('A','B','C','SPECIAL')) NOT NULL,
+      class TEXT,
       coy TEXT NOT NULL,
       status TEXT CHECK(status IN ('ON_ROAD','OFF_ROAD')) DEFAULT 'ON_ROAD',
       general_remarks TEXT,
@@ -135,7 +136,14 @@ async function initDB() {
     );
   `);
 
-  // Migrations for existing DB
+  // Safe migration to add class to existing databases
+  try {
+    await db.exec(`ALTER TABLE vehicles ADD COLUMN class TEXT;`);
+  } catch (e) {
+    // Column likely already exists, ignore
+  }
+
+  // Pre-seed some default dynamic columns for the maintenance module
   try {
     await db.exec(`ALTER TABLE vehicle_checks ADD COLUMN custom_data TEXT DEFAULT '{}'`);
   } catch (e) {}

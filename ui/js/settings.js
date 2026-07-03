@@ -36,7 +36,7 @@ function saveSettings() {
   const serverIp =
     document.getElementById("config-ip").value.trim() || "localhost";
   if (mode === "client" && (!serverIp || serverIp === "localhost")) {
-    alert(
+    showToast(
       "⚠️ ERROR: Please enter a valid Target Server IP address for Client mode."
     );
     return;

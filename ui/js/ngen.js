@@ -6,7 +6,7 @@ async function loadNGen() {
   tbody.innerHTML = "";
 
   if (!ngen || ngen.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-gray-500">No NGE vehicles found.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-gray-500">No NGE entries found.</td></tr>`;
     return;
   }
 
@@ -34,7 +34,7 @@ window.openAddNGenModal = function() {
   const form = document.getElementById("ngen-form");
   if(form) form.reset();
   const title = document.querySelector('#ngen-modal h2, #ngen-modal h3');
-  if (title) title.innerText = 'ADD NGE VEHICLE';
+  if (title) title.innerText = 'ADD NGE';
   openModal('ngen-modal');
 }
 
@@ -46,18 +46,18 @@ window.editNGen = function(e, id, eq, date, oem, remarks) {
   document.getElementById("n-oem").value = oem;
   document.getElementById("n-remarks").value = remarks || "";
   const title = document.querySelector('#ngen-modal h2, #ngen-modal h3');
-  if (title) title.innerText = 'EDIT NGE VEHICLE';
+  if (title) title.innerText = 'EDIT NGE';
   openModal('ngen-modal');
 }
 
 async function deleteNGen(e, id, eq) {
   if (e) e.stopPropagation();
-  if (!confirm(`Delete NGE vehicle ${eq}?`)) return;
+  if (!(await showConfirm())) return;
   const res = await api('/api/ngen/' + id, { method: 'DELETE' });
   if (res && res.success) {
     loadNGen();
   } else {
-    alert("❌ Error deleting");
+    showToast("❌ Error deleting");
   }
 }
 
@@ -80,12 +80,12 @@ function initNGenForm() {
         body: JSON.stringify(data),
       });
       if (res && res.success) {
-        alert(editingNGenId ? "✅ NGE vehicle updated!" : "✅ NGE vehicle added!");
+        showToast(editingNGenId ? "✅ NGE updated!" : "✅ NGE added!");
         closeModal("ngen-modal");
         loadNGen();
         e.target.reset();
       } else {
-        alert("❌ Error saving NGE");
+        showToast("❌ Error saving NGE");
       }
     };
   }

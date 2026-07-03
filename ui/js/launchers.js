@@ -52,12 +52,12 @@ window.editLauncher = function(e, id, name, coy, status, remarks) {
 
 async function deleteLauncher(e, id, name) {
   if (e) e.stopPropagation();
-  if (!confirm(`Delete launcher ${name}?`)) return;
+  if (!(await showConfirm())) return;
   const res = await api('/api/launchers/' + id, { method: 'DELETE' });
   if (res && res.success) {
     loadLaunchers();
   } else {
-    alert("❌ Error deleting");
+    showToast("❌ Error deleting");
   }
 }
 
@@ -80,12 +80,12 @@ function initLauncherForm() {
         body: JSON.stringify(data),
       });
       if (res && res.success) {
-        alert(editingLauncherId ? "✅ Launcher updated!" : "✅ Launcher added!");
+        showToast(editingLauncherId ? "✅ Launcher updated!" : "✅ Launcher added!");
         closeModal("launcher-modal");
         loadLaunchers();
         e.target.reset();
       } else {
-        alert("❌ Error saving launcher");
+        showToast("❌ Error saving launcher");
       }
     };
   }

@@ -23,10 +23,25 @@ async function loadCeme() {
         <td class="px-6 py-4">${escapeHtml(log.date)}</td>
         <td class="px-6 py-4 text-gray-800">${escapeHtml(log.remarks) || "—"}</td>
         <td class="px-6 py-4 text-right">
-          <button onclick="alert('Delete functionality coming soon!')" class="text-red-600 hover:text-red-800 font-bold text-sm">Delete</button>
+          <button onclick="showToast('Delete functionality coming soon!')" class="text-red-600 hover:text-red-800 font-bold text-sm">Delete</button>
         </td>
       </tr>
     `;
+  });
+}
+
+window.filterCeme = function() {
+  const input = document.getElementById("search-ceme").value.toLowerCase();
+  const rows = document.querySelectorAll("#ceme-table-body tr");
+  
+  rows.forEach(row => {
+    // BA Number is in Column 1 (0-indexed: 1)
+    const baText = row.children[1]?.innerText.toLowerCase() || "";
+    if (baText.includes(input)) {
+      row.style.display = "";
+    } else {
+      row.style.display = "none";
+    }
   });
 }
 
@@ -61,7 +76,7 @@ function initCemeForm() {
       };
       
       if (!data.vehicle_id) {
-        return alert("Please select a valid BA No.");
+        return showToast("Please select a valid BA No.");
       }
 
       const res = await api("/api/ceme", {
@@ -71,12 +86,12 @@ function initCemeForm() {
       });
 
       if (res && res.success) {
-        alert("✅ CEME Log added!");
+        showToast("✅ CEME Log added!");
         closeModal("ceme-modal");
         loadCeme();
         e.target.reset();
       } else {
-        alert("❌ Error adding CEME Log");
+        showToast("❌ Error adding CEME Log");
       }
     };
   }

@@ -7,7 +7,13 @@ async function loadVehicles() {
   if (!tbody || !vehicles) return;
   tbody.innerHTML = "";
 
+  const types = new Set();
+  const classes = new Set();
+
   vehicles.forEach((v, index) => {
+    if (v.vehicle_type) types.add(v.vehicle_type);
+    if (v.class) classes.add(v.class);
+    
     const statusColor =
       v.status === "ON_ROAD"
         ? "bg-green-100 text-green-800"
@@ -19,6 +25,7 @@ async function loadVehicles() {
         <td class="px-6 py-4 font-mono text-gray-500">${index + 1}</td>
         <td class="px-6 py-4 font-mono font-bold text-army-900">${v.ba_no}</td>
         <td class="px-6 py-4 font-bold">${v.vehicle_type}</td>
+        <td class="px-6 py-4">${v.class || "—"}</td>
         <td class="px-6 py-4">${v.coy}</td>
         <td class="px-6 py-4">
           <span class="px-2 py-1 rounded text-xs font-bold ${statusColor}">${(v.status || "ON_ROAD").replace(
@@ -30,12 +37,25 @@ async function loadVehicles() {
           v.general_remarks || "—"
         }</td>
         <td class="px-6 py-4 text-right">
-          <button onclick="editVehicle(event, ${v.vehicle_id}, \`${escapeHtml(v.ba_no)}\`, \`${escapeHtml(v.vehicle_type)}\`, \`${escapeHtml(v.coy)}\`, \`${escapeHtml(v.general_remarks || "")}\`)" class="text-army-700 hover:text-black font-bold text-sm mr-3">Edit</button>
+          <button onclick="editVehicle(event, ${v.vehicle_id}, \`${escapeHtml(v.ba_no)}\`, \`${escapeHtml(v.vehicle_type)}\`, \`${escapeHtml(v.class || "")}\`, \`${escapeHtml(v.coy)}\`, \`${escapeHtml(v.general_remarks || "")}\`)" class="text-army-700 hover:text-black font-bold text-sm mr-3">Edit</button>
           <button onclick="deleteVehicle(event, ${v.vehicle_id}, \`${escapeHtml(v.ba_no)}\`)" class="text-red-600 hover:text-red-800 font-bold text-sm">Delete</button>
         </td>
       </tr>
     `;
   });
+
+  const typeSelect = document.getElementById("filter-type");
+  const classSelect = document.getElementById("filter-class");
+  if (typeSelect && classSelect) {
+    const currType = typeSelect.value;
+    const currClass = classSelect.value;
+    
+    typeSelect.innerHTML = '<option value="">All Types</option>' + Array.from(types).sort().map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('');
+    classSelect.innerHTML = '<option value="">All Classes</option>' + Array.from(classes).sort().map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+    
+    typeSelect.value = currType;
+    classSelect.value = currClass;
+  }
 }
 
 let editingVehicleId = null;
@@ -49,11 +69,12 @@ window.openAddVehicleModal = function() {
   openModal('vehicle-modal');
 }
 
-window.editVehicle = function(e, id, ba_no, type, coy, remarks) {
+window.editVehicle = function(e, id, ba_no, type, v_class, coy, remarks) {
   if (e) e.stopPropagation();
   editingVehicleId = id;
   document.getElementById("v-ba").value = ba_no;
   document.getElementById("v-type").value = type;
+  document.getElementById("v-class").value = v_class || "";
   document.getElementById("v-coy").value = coy;
   document.getElementById("v-remarks").value = remarks || "";
   const mTitle = document.querySelector('#vehicle-modal h2, #vehicle-modal h3');
@@ -61,14 +82,38 @@ window.editVehicle = function(e, id, ba_no, type, coy, remarks) {
   openModal('vehicle-modal');
 }
 
+window.filterVehicles = function() {
+  const input = document.getElementById("search-vehicle").value.toLowerCase();
+  const typeFilter = document.getElementById("filter-type").value.toLowerCase();
+  const classFilter = document.getElementById("filter-class").value.toLowerCase();
+  const rows = document.querySelectorAll("#vehicle-table-body tr");
+  
+  rows.forEach(row => {
+    // Column 1 is BA, 2 is Type, 3 is Class
+    const baText = row.children[1]?.innerText.toLowerCase() || "";
+    const typeText = row.children[2]?.innerText.toLowerCase() || "";
+    const classText = row.children[3]?.innerText.toLowerCase() || "";
+    
+    const textMatch = baText.includes(input) || typeText.includes(input) || classText.includes(input);
+    const typeMatch = !typeFilter || typeText === typeFilter;
+    const classMatch = !classFilter || classText === classFilter;
+    
+    if (textMatch && typeMatch && classMatch) {
+      row.style.display = "";
+    } else {
+      row.style.display = "none";
+    }
+  });
+}
+
 async function deleteVehicle(e, id, ba_no) {
   if (e) e.stopPropagation();
-  if (!confirm(`Delete vehicle ${ba_no}?`)) return;
+  if (!(await showConfirm())) return;
   const res = await api('/api/vehicles/' + id, { method: 'DELETE' });
   if (res && res.success) {
     loadVehicles();
   } else {
-    alert("❌ Error deleting");
+    showToast("❌ Error deleting");
   }
 }
 
@@ -80,6 +125,7 @@ if (vForm) {
     const data = {
       ba_no: document.getElementById("v-ba").value,
       vehicle_type: document.getElementById("v-type").value,
+      class: document.getElementById("v-class").value,
       coy: document.getElementById("v-coy").value,
       general_remarks: document.getElementById("v-remarks").value,
     };
@@ -93,15 +139,15 @@ if (vForm) {
       });
       const result = await response.json();
       if (result.success) {
-        alert(editingVehicleId ? "✅ SUCCESS: Vehicle updated!" : "✅ SUCCESS: Vehicle added!");
+        showToast(editingVehicleId ? "✅ SUCCESS: Vehicle updated!" : "✅ SUCCESS: Vehicle added!");
         closeModal("vehicle-modal");
         loadVehicles();
         e.target.reset();
       } else {
-        alert("❌ SERVER ERROR: " + JSON.stringify(result));
+        showToast("❌ SERVER ERROR: " + JSON.stringify(result));
       }
     } catch (err) {
-      alert("❌ NETWORK ERROR: " + err.message);
+      showToast("❌ NETWORK ERROR: " + err.message);
     }
   };
 } 
@@ -239,7 +285,7 @@ async function saveVehicleChecks(vehicleId) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
-  if (res && res.success) alert("✅ CME status updated successfully.");
-  else alert("❌ Failed to save CME status.");
+  if (res && res.success) showToast("✅ CME status updated successfully.");
+  else showToast("❌ Failed to save CME status.");
 }
 

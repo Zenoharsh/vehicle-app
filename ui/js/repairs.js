@@ -84,19 +84,19 @@ if (rForm) {
       body: JSON.stringify(data),
     });
     if (res && res.success) {
-      alert("⚠️ Defect reported successfully.");
+      showToast("⚠️ Defect reported successfully.");
       closeModal("repair-modal");
       loadRepairs();
       e.target.reset();
     } else {
-      alert("❌ Error reporting defect");
+      showToast("❌ Error reporting defect");
     }
   };
 } 
 }
 
 async function resolveRepair(id) {
-  if (!confirm("Confirm that this defect has been rectified?")) return;
+  if (!(await showConfirm())) return;
   const res = await api(`/api/repairs/${id}/resolve`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -105,7 +105,7 @@ async function resolveRepair(id) {
   if (res && res.success) {
     loadRepairs();
   } else {
-    alert("Error resolving repair");
+    showToast("Error resolving repair");
   }
 }
 

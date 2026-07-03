@@ -66,12 +66,12 @@ window.editMod = function(e, id, vehicle_id, modification, authority, date, rema
 
 async function deleteMod(e, id, name) {
   if (e) e.stopPropagation();
-  if (!confirm(`Delete modification ${name}?`)) return;
+  if (!(await showConfirm())) return;
   const res = await api('/api/modifications/' + id, { method: 'DELETE' });
   if (res && res.success) {
     loadModifications();
   } else {
-    alert("❌ Error deleting");
+    showToast("❌ Error deleting");
   }
 }
 
@@ -95,12 +95,12 @@ function initModForm() {
         body: JSON.stringify(data),
       });
       if (res && res.success) {
-        alert(editingModId ? "✅ Modification updated!" : "✅ Modification recorded!");
+        showToast(editingModId ? "✅ Modification updated!" : "✅ Modification recorded!");
         closeModal("mod-modal");
         loadModifications();
         e.target.reset();
       } else {
-        alert("❌ Error saving mod");
+        showToast("❌ Error saving mod");
       }
     };
   } 
