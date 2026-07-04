@@ -1,6 +1,6 @@
 {
   "name": "15bn-command-app",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Vehicle Maintenance Command Dashboard",
   "main": "main.js",
   "author": "15th Bn Command",
@@ -11,6 +11,7 @@
     "dist": "electron-builder"
   },
   "dependencies": {
+    "adm-zip": "^0.5.18",
     "cors": "^2.8.5",
     "express": "^4.21.2",
     "multer": "^2.1.1",

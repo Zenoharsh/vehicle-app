@@ -2,8 +2,9 @@
 // Electron & Node Imports
 // ================================
 const { app, BrowserWindow, ipcMain, dialog } = require("electron");
-const path = require("path");
 const fs = require("fs");
+const AdmZip = require("adm-zip");
+const path = require("path");
 
 // ================================
 // IPC Handlers
@@ -30,6 +31,51 @@ ipcMain.handle("save-config", async (event, config) => {
 
 ipcMain.handle("log-error", async (event, msg) => {
   fs.appendFileSync('scratch/ui_log.txt', msg + '\n');
+});
+
+ipcMain.handle("export-backup", async (event) => {
+  const { canceled, filePath } = await dialog.showSaveDialog({
+    defaultPath: "15th-bn-backup.zip",
+    filters: [{ name: "Zip Archives", extensions: ["zip"] }]
+  });
+  if (canceled || !filePath) return { success: false, msg: "Canceled" };
+  
+  try {
+    const zip = new AdmZip();
+    zip.addLocalFile(path.join(app.getPath("userData"), "unit_command_final_v2.db"));
+    
+    const uploadsDir = path.join(app.getPath("userData"), "uploads");
+    if (fs.existsSync(uploadsDir)) {
+      zip.addLocalFolder(uploadsDir, "uploads");
+    }
+    
+    zip.writeZip(filePath);
+    return { success: true };
+  } catch (e) {
+    return { success: false, msg: e.message };
+  }
+});
+
+ipcMain.handle("import-backup", async (event) => {
+  const { canceled, filePaths } = await dialog.showOpenDialog({
+    properties: ["openFile"],
+    filters: [{ name: "Zip Archives", extensions: ["zip"] }]
+  });
+  if (canceled || filePaths.length === 0) return { success: false, msg: "Canceled" };
+  
+  try {
+    const db = require("./server/db").getDB();
+    await db.close();
+    
+    const zip = new AdmZip(filePaths[0]);
+    zip.extractAllTo(app.getPath("userData"), true);
+    
+    app.relaunch();
+    app.exit(0);
+    return { success: true };
+  } catch (e) {
+    return { success: false, msg: e.message };
+  }
 });
 
 // ================================

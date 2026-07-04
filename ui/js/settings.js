@@ -48,4 +48,33 @@ function saveSettings() {
     console.error("electronAPI.saveConfig not found in preload.js");
   }
 }
+
+async function exportBackup() {
+  if (!window.electronAPI.exportBackup) {
+    showToast("❌ Backup API not available.", "error");
+    return;
+  }
+  showToast("⏳ Preparing backup... please wait.");
+  const res = await window.electronAPI.exportBackup();
+  if (res.success) {
+    showToast("✅ Backup successfully saved!");
+  } else if (res.msg !== "Canceled") {
+    showToast("❌ Backup failed: " + res.msg, "error");
+  }
+}
+
+async function importBackup() {
+  if (!window.electronAPI.importBackup) {
+    showToast("❌ Restore API not available.", "error");
+    return;
+  }
+  
+  if (!(await showConfirm("WARNING: Restoring from a backup will permanently OVERWRITE all current data on this computer. Are you absolutely sure you want to proceed?"))) return;
+
+  showToast("⏳ Restoring data... the app will reboot shortly.");
+  const res = await window.electronAPI.importBackup();
+  if (!res.success && res.msg !== "Canceled") {
+    showToast("❌ Restore failed: " + res.msg, "error");
+  }
+}
 

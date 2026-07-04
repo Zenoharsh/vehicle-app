@@ -21,5 +21,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
   },
   loadHTML: (filename) => ipcRenderer.invoke("load-html", filename),
   saveConfig: (config) => ipcRenderer.invoke("save-config", config),
+  loadConfig: () => ipcRenderer.invoke("load-config"),
   logError: (msg) => ipcRenderer.invoke("log-error", msg),
+  exportBackup: () => ipcRenderer.invoke("export-backup"),
+  importBackup: () => ipcRenderer.invoke("import-backup")
 });
