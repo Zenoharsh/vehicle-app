@@ -71,7 +71,7 @@ router.get("/history/:date", async (req, res) => {
     const db = getDB();
     const date = req.params.date;
     const rows = await db.all(`
-      SELECT d.*, v.ba_no, v.coy, v.vehicle_type 
+      SELECT d.*, v.ba_no, v.class, v.coy, v.vehicle_type 
       FROM daily_inspections d
       JOIN vehicles v ON d.vehicle_id = v.vehicle_id
       WHERE d.inspection_date = ?
