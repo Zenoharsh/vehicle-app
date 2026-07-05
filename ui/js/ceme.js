@@ -23,7 +23,7 @@ async function loadCeme() {
         <td class="px-6 py-4">${escapeHtml(log.date)}</td>
         <td class="px-6 py-4 text-gray-800">${escapeHtml(log.remarks) || "—"}</td>
         <td class="px-6 py-4 text-right">
-          <button onclick="showToast('Delete functionality coming soon!')" class="text-red-600 hover:text-red-800 font-bold text-sm">Delete</button>
+          <button onclick="deleteCeme(${log.id})" class="text-red-600 hover:text-red-800 font-bold text-sm">Delete</button>
         </td>
       </tr>
     `;
@@ -94,5 +94,16 @@ function initCemeForm() {
         showToast("❌ Error adding CEME Log");
       }
     };
+  }
+}
+
+window.deleteCeme = async function(id) {
+  if (!(await showConfirm())) return;
+  const res = await api(`/api/ceme/${id}`, { method: "DELETE" });
+  if (res && res.success) {
+    showToast("✅ CEME Log deleted!");
+    loadCeme();
+  } else {
+    showToast("❌ Error deleting CEME Log");
   }
 }
